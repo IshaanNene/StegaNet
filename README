@@ -1,0 +1,8 @@
+```
+gcc -I$(brew --prefix libpng)/include -L$(brew --prefix libpng)/lib -o imageGen imageGen.c -lpng && ./imageGen
+```
+
+```
+gcc raylibFrontEnd.c -o stegaNet -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib -lm && ./stegaNet
+
+```
