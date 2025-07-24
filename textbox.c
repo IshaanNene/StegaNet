@@ -59,33 +59,33 @@ void UpdateTextBox() {
     lastMouse = mouse;
 }
 
-// Draw text using font inside rectangle limits with support for text selection
+
 static void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint)
 {
-    int length = TextLength(text);  // Total length in bytes of the text, scanned by codepoints in loop
+    int length = TextLength(text);  
 
-    float textOffsetY = 0;          // Offset between lines (on line break '\n')
-    float textOffsetX = 0.0f;       // Offset X to next character to draw
+    float textOffsetY = 0;          
+    float textOffsetX = 0.0f;       
 
-    float scaleFactor = fontSize/(float)font.baseSize;     // Character rectangle scaling factor
+    float scaleFactor = fontSize/(float)font.baseSize;     
 
-    // Word/character wrapping mechanism variables
+    
     enum { MEASURE_STATE = 0, DRAW_STATE = 1 };
     int state = wordWrap? MEASURE_STATE : DRAW_STATE;
 
-    int startLine = -1;         // Index where to begin drawing (where a line begins)
-    int endLine = -1;           // Index where to stop drawing (where a line ends)
-    int lastk = -1;             // Holds last value of the character position
+    int startLine = -1;         
+    int endLine = -1;           
+    int lastk = -1;             
 
     for (int i = 0, k = 0; i < length; i++, k++)
     {
-        // Get next codepoint from byte string and glyph index in font
+        
         int codepointByteCount = 0;
         int codepoint = GetCodepoint(&text[i], &codepointByteCount);
         int index = GetGlyphIndex(font, codepoint);
 
-        // NOTE: Normally we exit the decoding sequence as soon as a bad byte is found (and return 0x3f)
-        // but we need to draw all of the bad bytes using the '?' symbol moving one byte
+        
+        
         if (codepoint == 0x3f) codepointByteCount = 1;
         i += (codepointByteCount - 1);
 
@@ -97,15 +97,15 @@ static void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, 
             if (i + 1 < length) glyphWidth = glyphWidth + spacing;
         }
 
-        // NOTE: When wordWrap is ON we first measure how much of the text we can draw before going outside of the rec container
-        // We store this info in startLine and endLine, then we change states, draw the text between those two variables
-        // and change states again and again recursively until the end of the text (or until we get outside of the container).
-        // When wordWrap is OFF we don't need the measure state so we go to the drawing state immediately
-        // and begin drawing on the next line before we can get outside the container.
+        
+        
+        
+        
+        
         if (state == MEASURE_STATE)
         {
-            // TODO: There are multiple types of spaces in UNICODE, maybe it's a good idea to add support for more
-            // Ref: http://jkorpela.fi/chars/spaces.html
+            
+            
             if ((codepoint == ' ') || (codepoint == '\t') || (codepoint == '\n')) endLine = i;
 
             if ((textOffsetX + glyphWidth) > rec.width)
@@ -129,7 +129,7 @@ static void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, 
                 i = startLine;
                 glyphWidth = 0;
 
-                // Save character position when we switch states
+                
                 int tmp = lastk;
                 lastk = k - 1;
                 k = tmp;
@@ -153,10 +153,10 @@ static void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, 
                     textOffsetX = 0;
                 }
 
-                // When text overflows rectangle height limit, just stop drawing
+                
                 if ((textOffsetY + font.baseSize*scaleFactor) > rec.height) break;
 
-                // Draw selection background
+                
                 bool isGlyphSelected = false;
                 if ((selectStart >= 0) && (k >= selectStart) && (k < (selectStart + selectLength)))
                 {
@@ -164,7 +164,7 @@ static void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, 
                     isGlyphSelected = true;
                 }
 
-                // Draw current character glyph
+                
                 if ((codepoint != ' ') && (codepoint != '\t'))
                 {
                     DrawTextCodepoint(font, codepoint, (Vector2){ rec.x + textOffsetX, rec.y + textOffsetY }, fontSize, isGlyphSelected? selectTint : tint);
@@ -185,11 +185,11 @@ static void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, 
             }
         }
 
-        if ((textOffsetX != 0) || (codepoint != ' ')) textOffsetX += glyphWidth;  // avoid leading spaces
+        if ((textOffsetX != 0) || (codepoint != ' ')) textOffsetX += glyphWidth;  
     }
 }
 
-// Draw text using font inside rectangle limits
+
 static void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
 {
     DrawTextBoxedSelectable(font, text, rec, fontSize, spacing, wordWrap, tint, 0, 0, WHITE, WHITE);

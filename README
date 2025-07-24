@@ -1,8 +1,22 @@
-```
-gcc -I$(brew --prefix libpng)/include -L$(brew --prefix libpng)/lib -o imageGen imageGen.c -lpng && ./imageGen
-```
+# Build and Run StegaNet
+
+Use the provided Makefile for multi-file builds:
 
 ```
-gcc raylibFrontEnd.c -o stegaNet -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib -lm && ./stegaNet
+make
+./stegaNet
+```
 
+# For single-file Raylib front-end (if needed)
+
+```
+gcc bigl.c -o stegaNet -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib -lm
+./stegaNet
+```
+
+# For imageGen (if needed)
+
+```
+gcc -I$(brew --prefix libpng)/include -L$(brew --prefix libpng)/lib -o imageGen imageGen.c -lpng
+./imageGen
 ```

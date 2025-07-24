@@ -174,7 +174,7 @@ int main ()
     fptr = fopen("randomImage.png", "w");
     if (fptr == NULL) {
         printf("Error: Could not open/create file.\n");
-        return 1; // Or exit(1);
+        return 1; 
     }
     fclose(fptr);
     if (save_png_to_file (& randomImage, "randomImage.png")) {

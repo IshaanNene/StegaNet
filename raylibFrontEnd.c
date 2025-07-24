@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Application states
+
 typedef enum {
     STATE_MAIN_MENU,
     STATE_IMAGE_STEGO,
@@ -18,14 +18,14 @@ typedef enum {
     STATE_AUDIO_DECODE
 } AppState;
 
-// Image source options
+
 typedef enum {
     IMAGE_UPLOAD,
     IMAGE_GENERATE,
     IMAGE_NONE
 } ImageSource;
 
-// Audio source options
+
 typedef enum {
     AUDIO_UPLOAD,
     AUDIO_GENERATE,
@@ -33,7 +33,7 @@ typedef enum {
     AUDIO_NONE
 } AudioSource;
 
-// Global state variables
+
 AppState currentState = STATE_MAIN_MENU;
 ImageSource selectedImageSource = IMAGE_NONE;
 AudioSource selectedAudioSource = AUDIO_NONE;
@@ -44,7 +44,7 @@ bool messageEditMode = false;
 Texture2D encodedTexture;
 bool encodedTextureLoaded = false;
 
-// Function implementations
+
 void GenerateRandomImage() {
     TraceLog(LOG_INFO, "Generating random image...");
     system("gcc -I$(brew --prefix libpng)/include -L$(brew --prefix libpng)/lib -o imageGen imageGen.c -lpng && ./imageGen");
@@ -52,7 +52,7 @@ void GenerateRandomImage() {
 
 void GenerateRandomAudio() {
     TraceLog(LOG_INFO, "Generating random audio...");
-    // TODO: Implement random audio generation
+    
 }
 
 void DownloadFromYouTube(const char* url) {
@@ -65,11 +65,11 @@ void DownloadFromYouTube(const char* url) {
 }
 
 void DrawImageEncode() {
-    //https://www.youtube.com/watch?v=_uSZyO9GcFI
+    
     ClearBackground(RAYWHITE);
     int screenWidth = GetScreenWidth();
 
-    // Back button
+    
     if (GuiButton((Rectangle){ 30, 30, 100, 40 }, "Back")) {
         if (encodedTextureLoaded) {
             UnloadTexture(encodedTexture);
@@ -79,11 +79,11 @@ void DrawImageEncode() {
         return;
     }
 
-    // Title
+    
     const char* title = "Encode Message in Image";
     DrawText(title, screenWidth / 2 - MeasureText(title, 30) / 2, 50, 30, DARKGRAY);
 
-    // Source info
+    
     char sourceText[100];
     switch (selectedImageSource) {
         case IMAGE_UPLOAD: strcpy(sourceText, "Source: Uploaded Image"); break;
@@ -92,13 +92,13 @@ void DrawImageEncode() {
     }
     DrawText(sourceText, screenWidth / 2 - MeasureText(sourceText, 18) / 2, 100, 18, DARKGRAY);
 
-    // Message label and textbox
+    
     DrawText("Enter message to hide:", screenWidth / 2 - 200, 140, 16, DARKGRAY);
     if (GuiTextBox((Rectangle){ screenWidth / 2 - 200, 170, 400, 30 }, messageBuffer, 512, messageEditMode)) {
         messageEditMode = !messageEditMode;
     }
 
-    // Load texture if needed
+    
     if (!encodedTextureLoaded) {
         if (FileExists("randomImage.png")) {
             encodedTexture = LoadTexture("randomImage.png");
@@ -109,23 +109,23 @@ void DrawImageEncode() {
         }
     }
 
-    // Image Preview
+    
     float imageY = 220;
     DrawTextureEx(encodedTexture, (Vector2){ screenWidth / 2 - encodedTexture.width / 2.0f, imageY }, 0, 1.0f, WHITE);
 
-    // Buttons
+    
     float buttonY = imageY + encodedTexture.height + 20;
     if (GuiButton((Rectangle){ screenWidth / 2 - 160, buttonY, 140, 40 }, "Encode")) {
         TraceLog(LOG_INFO, "Encoding message: %s", messageBuffer);
-        // TODO: Call your encode function here
+        
     }
 
     if (GuiButton((Rectangle){ screenWidth / 2 + 20, buttonY, 140, 40 }, "Save Result")) {
         TraceLog(LOG_INFO, "Saving encoded image...");
-        // TODO: Add saving logic
+        
     }
 
-    // Footer Tip
+    
     const char* tip = "Click on the text box to edit the message";
     DrawText(tip, screenWidth / 2 - MeasureText(tip, 14) / 2, buttonY + 50, 14, GRAY);
 }
@@ -140,7 +140,7 @@ void DrawAudioEncode() {
     ClearBackground(RAYWHITE);
     int screenWidth = GetScreenWidth();
 
-    // Back button
+    
     if (GuiButton((Rectangle){ 30, 30, 100, 40 }, "Back")) {
         if (encodedTextureLoaded) {
             UnloadTexture(encodedTexture);
@@ -150,11 +150,11 @@ void DrawAudioEncode() {
         return;
     }
 
-    // Title
+    
     const char* title = "Encode Message in Audio";
     DrawText(title, screenWidth / 2 - MeasureText(title, 30) / 2, 50, 30, DARKGRAY);
 
-    // Source info
+    
     char sourceText[100];
     switch (selectedImageSource) {
         case AUDIO_UPLOAD: strcpy(sourceText, "Source: Uploaded Audio"); break;
@@ -163,13 +163,13 @@ void DrawAudioEncode() {
     }
     DrawText(sourceText, screenWidth / 2 - MeasureText(sourceText, 18) / 2, 100, 18, DARKGRAY);
 
-    // Message label and textbox
+    
     DrawText("Enter message to hide:", screenWidth / 2 - 200, 140, 16, DARKGRAY);
     if (GuiTextBox((Rectangle){ screenWidth / 2 - 200, 170, 400, 30 }, messageBuffer, 512, messageEditMode)) {
         messageEditMode = !messageEditMode;
     }
 
-    // Load texture if needed
+    
     if (!encodedTextureLoaded) {
         if (FileExists("randomImage.png")) {
             encodedTexture = LoadTexture("randomImage.png");
@@ -180,23 +180,23 @@ void DrawAudioEncode() {
         }
     }
 
-    // Image Preview
+    
     float imageY = 220;
     DrawTextureEx(encodedTexture, (Vector2){ screenWidth / 2 - encodedTexture.width / 2.0f, imageY }, 0, 1.0f, WHITE);
 
-    // Buttons
+    
     float buttonY = imageY + encodedTexture.height + 20;
     if (GuiButton((Rectangle){ screenWidth / 2 - 160, buttonY, 140, 40 }, "Encode")) {
         TraceLog(LOG_INFO, "Encoding message: %s", messageBuffer);
-        // TODO: Call your encode function here
+        
     }
 
     if (GuiButton((Rectangle){ screenWidth / 2 + 20, buttonY, 140, 40 }, "Save Result")) {
         TraceLog(LOG_INFO, "Saving encoded image...");
-        // TODO: Add saving logic
+        
     }
 
-    // Footer Tip
+    
     const char* tip = "Click on the text box to edit the message";
     DrawText(tip, screenWidth / 2 - MeasureText(tip, 14) / 2, buttonY + 50, 14, GRAY);
 }
