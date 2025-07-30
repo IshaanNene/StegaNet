@@ -1,4 +1,3 @@
-
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200809L
 LIBS = -lraylib -lpthread -lm
@@ -11,7 +10,7 @@ endif
 
 # Source files
 SOURCES = socket_chat.c bigl.c
-HEADERS = steganet.h raygui.h
+HEADERS = raygui.h
 TARGET = steganet_enhanced
 
 all: $(TARGET)

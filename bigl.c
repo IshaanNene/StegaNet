@@ -85,28 +85,28 @@ void DrawStatusMessage() {
 void GenerateRandomImage() {
     TraceLog(LOG_INFO, "Generating random image...");
     
-    // Generate a simple random image
     int width = 512;
     int height = 512;
     Image image = GenImageColor(width, height, WHITE);
-    
-    // Add some random patterns
-    for (int i = 0; i < 1000; i++) {
-        int x = GetRandomValue(0, width - 1);
-        int y = GetRandomValue(0, height - 1);
-        Color color = {
-            GetRandomValue(0, 255),
-            GetRandomValue(0, 255),
-            GetRandomValue(0, 255),
-            255
-        };
-        ImageDrawPixel(&image, x, y, color);
+
+    // Color every pixel with a random color
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            Color color = {
+                GetRandomValue(0, 255),
+                GetRandomValue(0, 255),
+                GetRandomValue(0, 255),
+                255
+            };
+            ImageDrawPixel(&image, x, y, color);
+        }
     }
-    
+
     ExportImage(image, "randomImage.png");
     UnloadImage(image);
     ShowStatusMessage("Random image generated successfully!");
 }
+
 
 void EncodeMessageInImage(const char* imagePath, const char* message, const char* outputPath) {
     Image image = LoadImage(imagePath);
@@ -368,13 +368,13 @@ char* DecodeMessageFromAudio(const char* audioPath) {
 }
 
 void DownloadFromYouTube(const char* url) {
-    char command[512];
-    snprintf(command, sizeof(command), "yt-dlp -f 'ba[ext=wav]/ba[ext=m4a]/ba' --extract-audio --audio-format wav --output 'youtube_audio.%%(ext)s' \"%s\"", url);
+    char command[1024];
+    snprintf(command, sizeof(command), "python3 yt_downloader.py \"%s\"", url);
     int result = system(command);
     if (result == 0) {
         ShowStatusMessage("Audio downloaded successfully!");
     } else {
-        ShowStatusMessage("Failed to download audio. Make sure yt-dlp is installed.");
+        ShowStatusMessage("Failed to download audio. Check yt-dlp or URL.");
     }
 }
 
@@ -880,7 +880,6 @@ int main(void) {
                 DrawAudioDecode();
                 break;
             case STATE_YOUTUBE_INPUT:
-                // Currently unused or placeholder
                 break;
         }
 
