@@ -1,3 +1,4 @@
+# Ignore image files
 *.png
 *.jpeg
 *.jpg
@@ -7,10 +8,14 @@
 *.webp
 *.svg
 *.ico
-*.mp3       
+
+# Ignore audio files
+*.mp3
 *.wav
 *.ogg
 *.flac
+
+# Ignore video files
 *.mp4
 *.avi
 *.mkv
@@ -18,3 +23,17 @@
 *.wmv
 *.flv
 *.webm
+
+# Ignore IDE/editor settings
+.vscode/
+*.swp
+*.swo
+
+# Ignore macOS metadata
+.DS_Store
+
+# Ignore temp and backup files
+*.bak
+*.tmp
+*.log
+*.out
