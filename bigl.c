@@ -837,61 +837,61 @@ void DrawAudioSteganography() {
     DrawStatusMessage();
 }
 
-int main(void) {
-    InitWindow(1000, 650, "StegaNet - Steganography Application");
-    InitAudioDevice();
-    SetTargetFPS(60);
+// int main(void) {
+//     InitWindow(1000, 650, "StegaNet - Steganography Application");
+//     InitAudioDevice();
+//     SetTargetFPS(60);
 
-    // Initialize random seed
-    SetRandomSeed(time(NULL));
+//     // Initialize random seed
+//     SetRandomSeed(time(NULL));
 
-    while (!WindowShouldClose()) {
-        UpdateStatusMessage();
+//     while (!WindowShouldClose()) {
+//         UpdateStatusMessage();
 
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
+//         BeginDrawing();
+//         ClearBackground(RAYWHITE);
 
-        switch (currentState) {
-            case STATE_MAIN_MENU:
-                DrawMainMenu();
-                break;
-            case STATE_IMAGE_STEGO:
-                DrawImageSteganography();
-                break;
-            case STATE_AUDIO_STEGO:
-                DrawAudioSteganography();
-                break;
-            case STATE_IMAGE_OPTIONS:
-                DrawImageOptions();
-                break;
-            case STATE_AUDIO_OPTIONS:
-                DrawAudioOptions();
-                break;
-            case STATE_IMAGE_ENCODE:
-                DrawImageEncode();
-                break;
-            case STATE_IMAGE_DECODE:
-                DrawImageDecode();
-                break;
-            case STATE_AUDIO_ENCODE:
-                DrawAudioEncode();
-                break;
-            case STATE_AUDIO_DECODE:
-                DrawAudioDecode();
-                break;
-            case STATE_YOUTUBE_INPUT:
-                break;
-        }
+//         switch (currentState) {
+//             case STATE_MAIN_MENU:
+//                 DrawMainMenu();
+//                 break;
+//             case STATE_IMAGE_STEGO:
+//                 DrawImageSteganography();
+//                 break;
+//             case STATE_AUDIO_STEGO:
+//                 DrawAudioSteganography();
+//                 break;
+//             case STATE_IMAGE_OPTIONS:
+//                 DrawImageOptions();
+//                 break;
+//             case STATE_AUDIO_OPTIONS:
+//                 DrawAudioOptions();
+//                 break;
+//             case STATE_IMAGE_ENCODE:
+//                 DrawImageEncode();
+//                 break;
+//             case STATE_IMAGE_DECODE:
+//                 DrawImageDecode();
+//                 break;
+//             case STATE_AUDIO_ENCODE:
+//                 DrawAudioEncode();
+//                 break;
+//             case STATE_AUDIO_DECODE:
+//                 DrawAudioDecode();
+//                 break;
+//             case STATE_YOUTUBE_INPUT:
+//                 break;
+//         }
 
-        EndDrawing();
-    }
+//         EndDrawing();
+//     }
 
-    // Cleanup
-    if (encodedTextureLoaded) UnloadTexture(encodedTexture);
-    if (audioWaveLoaded) UnloadWave(audioWave);
-    if (audioSoundLoaded) UnloadSound(audioSound);
+//     // Cleanup
+//     if (encodedTextureLoaded) UnloadTexture(encodedTexture);
+//     if (audioWaveLoaded) UnloadWave(audioWave);
+//     if (audioSoundLoaded) UnloadSound(audioSound);
 
-    CloseAudioDevice();
-    CloseWindow();
-    return 0;
-}
+//     CloseAudioDevice();
+//     CloseWindow();
+//     return 0;
+// }

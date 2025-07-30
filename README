@@ -2,21 +2,16 @@
 
 Use the provided Makefile for multi-file builds:
 
-```
-make
-./stegaNet
-```
 
 # For single-file Raylib front-end (if needed)
-
+# Ensure uncommenting int main() in bigl
 ```
 gcc bigl.c -o stegaNet -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib -lm
 ./stegaNet
 ```
 
-# For imageGen (if needed)
-
+# For Socket Programming
 ```
-gcc -I$(brew --prefix libpng)/include -L$(brew --prefix libpng)/lib -o imageGen imageGen.c -lpng
-./imageGen
+gcc socket_chat.c bigl.c -o StegaNet -I/opt/homebrew/include -L/opt/homebrew/lib -lraylib -lpthread -lm 
+-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreAudio && ./StegaNet
 ```

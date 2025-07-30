@@ -1,6 +1,4 @@
-
 #include <raylib.h>
-#define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
