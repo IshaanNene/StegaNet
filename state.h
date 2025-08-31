@@ -11,7 +11,8 @@ typedef enum {
     STATE_IMAGE_DECODE,
     STATE_AUDIO_ENCODE,
     STATE_AUDIO_DECODE,
-    STATE_YOUTUBE_INPUT
+    STATE_YOUTUBE_INPUT,
+    STATE_CHAT_INTERFACE  
 } AppState;
 
 typedef enum {

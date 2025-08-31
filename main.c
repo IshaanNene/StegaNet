@@ -3,6 +3,7 @@
 #include "raygui.h"
 #include "globals.h"
 #include "utils.h"
+#include "chat.h"
 #include "draw.h"
 
 int main() {
@@ -23,11 +24,16 @@ int main() {
             case STATE_AUDIO_OPTIONS: DrawAudioSteganography(); break;
             case STATE_AUDIO_ENCODE: DrawAudioEncode(); break;
             case STATE_AUDIO_DECODE: DrawAudioDecode(); break;
+            case STATE_CHAT_INTERFACE: 
+                Chat_Update();
+                Chat_Draw();
+                break;
             default: break;
         }
         EndDrawing();
     }
-
+    Chat_Shutdown();
     CloseWindow();
+    
     return 0;
 }

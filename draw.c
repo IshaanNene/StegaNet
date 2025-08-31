@@ -8,6 +8,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include "chat.h"
+
+extern void Chat_Init(void);
+extern void Chat_Shutdown(void);
+extern void Chat_Update(void);
+extern void Chat_Draw(void);
 
 void DrawImageEncode() {
     ClearBackground(RAYWHITE);
@@ -305,6 +311,11 @@ void DrawMainMenu() {
     DrawText(subtitle, screenWidth / 2 - MeasureText(subtitle, 20) / 2, 160, 20, GRAY);
 
     // Buttons
+    // in your menu:
+    if (GuiButton((Rectangle){ screenWidth/2 - 100, 320, 200, 60 }, "Socket Chat")) {
+        Chat_Init();
+        currentState = STATE_CHAT_INTERFACE;
+    }
     if (GuiButton((Rectangle){ 170, 250, 250, 100 }, "Image Steganography")) {
         currentState = STATE_IMAGE_STEGO;
     }
