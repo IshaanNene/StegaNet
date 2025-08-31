@@ -7,6 +7,7 @@
 
 int main() {
     InitWindow(1000, 600, "StegaNet");
+    InitAudioDevice(); 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
@@ -27,7 +28,7 @@ int main() {
         }
         EndDrawing();
     }
-
+    CloseAudioDevice(); 
     CloseWindow();
     return 0;
 }
