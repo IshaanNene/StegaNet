@@ -21,3 +21,9 @@ clean:
 	rm -rf inbox
 	rm -rf random*
 	rm -rf encoded*
+
+update:
+	git status
+	git add .
+	git commit -m "update"
+	git push
