@@ -1,7 +1,6 @@
 CC=gcc
-CFLAGS=-O2 -I/opt/homebrew/opt/raylib/include
-LDFLAGS=-L/opt/homebrew/opt/raylib/lib -lraylib -lpthread -lm \
-  -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreAudio
+CFLAGS=-O2 -Wall -Wextra -std=c99
+LDFLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 SRC=$(wildcard *.c)
 OBJ=$(patsubst %.c, %.o, $(SRC))
@@ -21,3 +20,9 @@ clean:
 	rm -rf inbox
 	rm -rf random*
 	rm -rf encoded*
+
+install-deps:
+	sudo apt-get update
+	sudo apt-get install -y libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev
+
+.PHONY: all clean install-deps
