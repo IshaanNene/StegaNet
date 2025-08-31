@@ -310,19 +310,25 @@ void DrawMainMenu() {
     const char* subtitle = "Choose Steganography Type";
     DrawText(subtitle, screenWidth / 2 - MeasureText(subtitle, 20) / 2, 160, 20, GRAY);
 
-    // Buttons
-    // in your menu:
-    if (GuiButton((Rectangle){ screenWidth/2 - 100, 320, 200, 60 }, "Socket Chat")) {
+    int buttonWidth = 200;
+    int buttonHeight = 60;
+    int buttonSpacing = 20;
+    int startY = 220;
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth/2, startY, buttonWidth, buttonHeight }, "Image Steganography")) {
+        currentState = STATE_IMAGE_STEGO;
+    }
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth/2, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight }, "Audio Steganography")) {
+        currentState = STATE_AUDIO_STEGO;
+    }
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth/2, startY + (buttonHeight + buttonSpacing) * 2, buttonWidth, buttonHeight }, "Socket Chat")) {
         Chat_Init();
         currentState = STATE_CHAT_INTERFACE;
     }
-    if (GuiButton((Rectangle){ 170, 250, 250, 100 }, "Image Steganography")) {
-        currentState = STATE_IMAGE_STEGO;
-    }
-    if (GuiButton((Rectangle){ 570, 250, 250, 100 }, "Audio Steganography")) {
-        currentState = STATE_AUDIO_STEGO;
-    }
-    if (GuiButton((Rectangle){ 450, 400, 100, 50 }, "Exit")) {
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - 50, startY + (buttonHeight + buttonSpacing) * 3, 100, 50 }, "Exit")) {
         // Clean up and exit
         if (encodedTextureLoaded) UnloadTexture(encodedTexture);
         if (audioWaveLoaded) UnloadWave(audioWave);
@@ -347,19 +353,22 @@ void DrawImageSteganography() {
         currentState = STATE_MAIN_MENU;
     }
     
-    // Options
-    if (GuiButton((Rectangle){ 170, 250, 250, 100 }, "Encode Message")) {
+    int buttonWidth = 200;
+    int buttonHeight = 60;
+    int buttonSpacing = 40;
+    int startY = 220;
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth - buttonSpacing/2, startY, buttonWidth, buttonHeight }, "Encode Message")) {
         currentState = STATE_IMAGE_OPTIONS;
         selectedImageSource = IMAGE_NONE;
     }
-    if (GuiButton((Rectangle){ 570, 250, 250, 100 }, "Decode Message")) {
+    if (GuiButton((Rectangle){ screenWidth/2 + buttonSpacing/2, startY, buttonWidth, buttonHeight }, "Decode Message")) {
         currentState = STATE_IMAGE_DECODE;
         filePathBuffer[0] = '\0';
         decodedMessageBuffer[0] = '\0';
     }
     
-    // Description
-    const char* desc = "Select an option to encode or decode messages in audio files";
+    const char* desc = "Select an option to encode or decode messages in image files";
     DrawText(desc, screenWidth / 2 - MeasureText(desc, 16) / 2, 400, 16, GRAY);
 
     DrawStatusMessage();
@@ -382,21 +391,24 @@ void DrawImageOptions() {
     const char* instructions = "Choose image source:";
     DrawText(instructions, screenWidth / 2 - MeasureText(instructions, 20) / 2, 180, 20, DARKGRAY);
 
-    // Options
-    if (GuiButton((Rectangle){ 150, 220, 200, 60 }, "Upload Image")) {
+    int buttonWidth = 180;
+    int buttonHeight = 60;
+    int buttonSpacing = 40;
+    int startY = 220;
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth - buttonSpacing/2, startY, buttonWidth, buttonHeight }, "Upload Image")) {
         selectedImageSource = IMAGE_UPLOAD;
         filePathBuffer[0] = '\0';
         messageBuffer[0] = '\0';
         currentState = STATE_IMAGE_ENCODE;
     }
-    if (GuiButton((Rectangle){ 400, 220, 200, 60 }, "Generate Random")) {
+    if (GuiButton((Rectangle){ screenWidth/2 + buttonSpacing/2, startY, buttonWidth, buttonHeight }, "Generate Random")) {
         selectedImageSource = IMAGE_GENERATE;
         messageBuffer[0] = '\0';
         GenerateRandomImage();
         currentState = STATE_IMAGE_ENCODE;
     }
     
-    // Description
     const char* desc = "Upload an existing image or generate a random one";
     DrawText(desc, screenWidth / 2 - MeasureText(desc, 16) / 2, 320, 16, GRAY);
 
@@ -420,20 +432,24 @@ void DrawAudioOptions() {
     const char* instructions = "Choose audio source:";
     DrawText(instructions, screenWidth / 2 - MeasureText(instructions, 20) / 2, 180, 20, DARKGRAY);
 
-    // Options
-    if (GuiButton((Rectangle){ 100, 220, 180, 60 }, "Upload Audio")) {
+    int buttonWidth = 150;
+    int buttonHeight = 60;
+    int buttonSpacing = 30;
+    int startY = 220;
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth*1.5 - buttonSpacing, startY, buttonWidth, buttonHeight }, "Upload Audio")) {
         selectedAudioSource = AUDIO_UPLOAD;
         filePathBuffer[0] = '\0';
         messageBuffer[0] = '\0';
         currentState = STATE_AUDIO_ENCODE;
     }
-    if (GuiButton((Rectangle){ 300, 220, 180, 60 }, "Generate Audio")) {
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth/2, startY, buttonWidth, buttonHeight }, "Generate Audio")) {
         selectedAudioSource = AUDIO_GENERATE;
         messageBuffer[0] = '\0';
         GenerateRandomAudio();
         currentState = STATE_AUDIO_ENCODE;
     }
-    if (GuiButton((Rectangle){ 500, 220, 180, 60 }, "YouTube Link")) {
+    if (GuiButton((Rectangle){ screenWidth/2 + buttonWidth/2 + buttonSpacing, startY, buttonWidth, buttonHeight }, "YouTube Link")) {
         selectedAudioSource = AUDIO_YOUTUBE;
         ytLinkBuffer[0] = '\0';
         messageBuffer[0] = '\0';
@@ -460,12 +476,16 @@ void DrawAudioSteganography() {
         currentState = STATE_MAIN_MENU;
     }
 
-    // Options
-    if (GuiButton((Rectangle){ 170, 250, 250, 100 }, "Encode Message")) {
+    int buttonWidth = 200;
+    int buttonHeight = 60;
+    int buttonSpacing = 40;
+    int startY = 220;
+    
+    if (GuiButton((Rectangle){ screenWidth/2 - buttonWidth - buttonSpacing/2, startY, buttonWidth, buttonHeight }, "Encode Message")) {
         currentState = STATE_AUDIO_OPTIONS;
         selectedAudioSource = AUDIO_NONE;
     }
-    if (GuiButton((Rectangle){ 570, 250, 250, 100 }, "Decode Message")) {
+    if (GuiButton((Rectangle){ screenWidth/2 + buttonSpacing/2, startY, buttonWidth, buttonHeight }, "Decode Message")) {
         currentState = STATE_AUDIO_DECODE;
         filePathBuffer[0] = '\0';
         decodedMessageBuffer[0] = '\0';
