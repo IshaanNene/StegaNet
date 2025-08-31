@@ -1,0 +1,30 @@
+#ifndef STATE_H
+#define STATE_H
+
+typedef enum {
+    STATE_MAIN_MENU,
+    STATE_IMAGE_STEGO,
+    STATE_AUDIO_STEGO,
+    STATE_IMAGE_OPTIONS,
+    STATE_AUDIO_OPTIONS,
+    STATE_IMAGE_ENCODE,
+    STATE_IMAGE_DECODE,
+    STATE_AUDIO_ENCODE,
+    STATE_AUDIO_DECODE,
+    STATE_YOUTUBE_INPUT
+} AppState;
+
+typedef enum {
+    IMAGE_UPLOAD,
+    IMAGE_GENERATE,
+    IMAGE_NONE
+} ImageSource;
+
+typedef enum {
+    AUDIO_UPLOAD,
+    AUDIO_GENERATE,
+    AUDIO_YOUTUBE,
+    AUDIO_NONE
+} AudioSource;
+
+#endif

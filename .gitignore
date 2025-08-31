@@ -1,0 +1,43 @@
+# Ignore image files
+*.png
+*.jpeg
+*.jpg
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.svg
+*.ico
+
+# Ignore audio files
+*.mp3
+*.wav
+*.ogg
+*.flac
+
+# Ignore video files
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Ignore IDE/editor settings
+.vscode/
+*.swp
+*.swo
+
+# Ignore macOS metadata
+.DS_Store
+
+# Ignore temp and backup files
+*.bak
+*.tmp
+*.log
+*.out
+
+
+StegaNet  audio_stego.o  draw.o  globals.o  image_stego.o  main.o  utils.o  youtube.o stego_*.png stego_*.wav
+idea/
