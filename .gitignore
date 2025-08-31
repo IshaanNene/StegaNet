@@ -37,3 +37,7 @@
 *.tmp
 *.log
 *.out
+
+
+StegaNet  audio_stego.o  draw.o  globals.o  image_stego.o  main.o  utils.o  youtube.o stego_*.png stego_*.wav
+idea/
