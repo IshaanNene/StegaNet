@@ -17,7 +17,7 @@ $(TARGET): $(OBJ)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	rm -f $(TARGET) $(OBJ) stego_*.png stego_*.wav
+	rm -f $(TARGET) $(OBJ) *.png *.wav 
 	rm -rf inbox
 	rm -rf random*
 	rm -rf encoded*
