@@ -4,6 +4,25 @@ import subprocess
 import os
 import re
 
+def sanitize_url(url):
+    """
+    Sanitize and normalize the YouTube URL
+    """
+    # Remove any surrounding whitespace
+    url = url.strip()
+    
+    # If it's a partial URL, prepend full YouTube domain
+    if url.startswith('www.youtube.com/'):
+        url = f'https://{url}'
+    elif url.startswith('youtube.com/'):
+        url = f'https://www.{url}'
+    
+    # Handle cases where only video ID is provided
+    if re.match(r'^[a-zA-Z0-9_-]+$', url):
+        url = f'https://www.youtube.com/watch?v={url}'
+    
+    return url
+
 def is_valid_youtube_url(url):
     """
     Validate YouTube URL format, including full URLs, shorts, and various formats
@@ -46,11 +65,9 @@ def download_audio(url):
     Returns:
         str: Path to the downloaded audio file or error message
     """
-    # Ensure full YouTube URL
-    if not url.startswith(('http://', 'https://')):
-        url = f"https://www.youtube.com/{url}"
+    # Sanitize and validate URL
+    url = sanitize_url(url)
     
-    # Validate URL
     if not is_valid_youtube_url(url):
         print(f"ERROR: Invalid YouTube URL format: {url}")
         return 1
