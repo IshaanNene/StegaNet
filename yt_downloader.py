@@ -6,16 +6,35 @@ import re
 
 def is_valid_youtube_url(url):
     """
-    Validate YouTube URL format
+    Validate YouTube URL format, including full URLs, shorts, and various formats
+    
+    Supports:
+    - Regular YouTube video URLs
+    - YouTube Shorts URLs
+    - Embedded video URLs
+    - Shortened youtu.be URLs
     """
-    # Regex patterns for various YouTube URL formats
     youtube_patterns = [
-        r'^(https?://)?(www\.)?(youtube\.com/watch\?v=|youtu\.be/)[a-zA-Z0-9_-]+',
-        r'^(https?://)?(www\.)?(youtube\.com/embed/)[a-zA-Z0-9_-]+',
-        r'^(https?://)?(www\.)?(youtube\.com/v/)[a-zA-Z0-9_-]+'
+        # Standard watch URLs
+        r'^(https?://)?(www\.)?youtube\.com/watch\?v=[a-zA-Z0-9_-]+',
+        
+        # Shortened youtu.be URLs
+        r'^(https?://)?(www\.)?youtu\.be/[a-zA-Z0-9_-]+',
+        
+        # Embedded video URLs
+        r'^(https?://)?(www\.)?youtube\.com/embed/[a-zA-Z0-9_-]+',
+        
+        # YouTube Shorts URLs
+        r'^(https?://)?(www\.)?youtube\.com/shorts/[a-zA-Z0-9_-]+',
+        
+        # Alternative Shorts URL format
+        r'^(https?://)?(www\.)?youtube\.com/watch\?v=[a-zA-Z0-9_-]+&feature=shorts',
+        
+        # Shorts on youtu.be
+        r'^(https?://)?(www\.)?youtu\.be/[a-zA-Z0-9_-]+\?feature=shorts'
     ]
     
-    return any(re.match(pattern, url) for pattern in youtube_patterns)
+    return any(re.match(pattern, url, re.IGNORECASE) for pattern in youtube_patterns)
 
 def download_audio(url):
     """
@@ -30,6 +49,11 @@ def download_audio(url):
     # Ensure full YouTube URL
     if not url.startswith(('http://', 'https://')):
         url = f"https://www.youtube.com/{url}"
+    
+    # Validate URL
+    if not is_valid_youtube_url(url):
+        print(f"ERROR: Invalid YouTube URL format: {url}")
+        return 1
 
     try:
         # Ensure the output is a WAV file
