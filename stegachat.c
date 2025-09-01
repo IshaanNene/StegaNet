@@ -1303,42 +1303,22 @@ void DrawChat() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
     
-    // Background gradient
+    // Soft gradient background
     DrawRectangleGradientV(0, 0, screenWidth, screenHeight, 
                            (Color){229, 221, 213, 255}, 
                            (Color){219, 209, 199, 255});
     
-    // Header
+    // Refined header with depth
     DrawRectangle(0, 0, screenWidth, 70, (Color){7, 94, 84, 255});
+    DrawRectangleLinesEx((Rectangle){0, 0, screenWidth, 70}, 2, (Color){200, 200, 200, 255});
     
-    // Contact info
-    DrawCircle(50, 35, 20, WHITE);
-    DrawText("C", 44, 27, 20, (Color){7, 94, 84, 255});
-    DrawText(connection.isConnected ? "Contact" : "Not Connected", 80, 20, 18, WHITE);
-    DrawText(connection.isConnected ? "Online" : "Offline", 80, 42, 14, (Color){200, 200, 200, 255});
+    // Softer contact info
+    DrawCircle(50, 35, 22, (Color){63, 81, 181, 255});
+    DrawText("C", 44, 27, 22, WHITE);
+    DrawText(connection.isConnected ? "Contact" : "Not Connected", 80, 20, 20, WHITE);
+    DrawText(connection.isConnected ? "Online" : "Offline", 80, 45, 16, (Color){0, 188, 212, 255});
     
-    // Connection info
-    if (connection.isConnected) {
-        char connInfo[100];
-        sprintf(connInfo, "Connected to: %s:%d", connection.remoteIP, connection.remotePort);
-        int textWidth = MeasureText(connInfo, 12);
-        DrawText(connInfo, screenWidth - textWidth - 10, 25, 12, (Color){200, 200, 200, 255});
-    }
-    
-    // Disconnect button
-    if (connection.isConnected) {
-        if (GuiButton((Rectangle){screenWidth - 100, 40, 80, 25}, "Disconnect")) {
-            CloseConnection();
-            showConnectionDialog = true;
-        }
-    }
-    
-    // Messages area
-    int chatAreaY = 70;
-    int chatAreaHeight = screenHeight - 220; // More space for enhanced input area
-    int messageY = chatAreaY + 10 - (int)scrollOffset;
-    
-    // Draw messages
+    // More refined message bubbles
     pthread_mutex_lock(&messageMutex);
     for (int i = 0; i < messageCount; i++) {
         ChatMessage* msg = &messages[i];
@@ -1359,146 +1339,17 @@ void DrawChat() {
         }
         
         // Message bubble
-        Color bubbleColor = msg->isSent ? (Color){220, 248, 198, 255} : WHITE;
-        DrawRectangleRounded((Rectangle){msgX, messageY, msgWidth, msgHeight}, 0.1f, 8, bubbleColor);
-        DrawRectangleLinesEx((Rectangle){msgX, messageY, msgWidth, msgHeight}, 1, (Color){200, 200, 200, 255});
+        Color bubbleColor = msg->isSent ? 
+            (Color){240, 248, 255, 255} :  // Soft Blue for sent
+            (Color){255, 255, 255, 255};   // Pure White for received
         
-        // Draw content based on message type
-        if (msg->type == MSG_TEXT) {
-            // Text message - simple wrapping
-            const char* text = msg->content;
-            int textY = messageY + 10;
-            int maxWidth = msgWidth - 20;
-            
-            // Simple text display
-            DrawText(text, msgX + 10, textY, 14, DARKGRAY);
-        } else if (msg->type == MSG_IMAGE) {
-            // Image message
-            DrawText("🖼️ Image:", msgX + 10, messageY + 10, 14, DARKGRAY);
-            
-            // Load and display the actual image (both sent and received)
-            char imagePath[512];
-            if (msg->isSent) {
-                // For sent messages, try to find the original file
-                const char* filename = strrchr(msg->content, ']');
-                filename = filename ? filename + 2 : msg->content;
-                strcpy(imagePath, filename);
-            } else {
-                // For received messages
-                const char* filename = strrchr(msg->content, ']');
-                filename = filename ? filename + 2 : msg->content;
-                sprintf(imagePath, "received_%s", filename);
-            }
-            
-            // Display image if available
-            if (FileExists(imagePath)) {
-                if (!messageImageLoaded[i]) {
-                    Image img = LoadImage(imagePath);
-                    if (img.data != NULL) {
-                        // Resize for message display
-                        float scale = fminf(150.0f / img.width, 80.0f / img.height);
-                        int newWidth = (int)(img.width * scale);
-                        int newHeight = (int)(img.height * scale);
-                        ImageResize(&img, newWidth, newHeight);
-                        
-                        messageImages[i] = LoadTextureFromImage(img);
-                        UnloadImage(img);
-                        messageImageLoaded[i] = true;
-                    }
-                }
-                
-                if (messageImageLoaded[i]) {
-                    DrawTexture(messageImages[i], msgX + 10, messageY + 25, WHITE);
-                    
-                    // Click to view full image
-                    Rectangle imgRect = {msgX + 10, messageY + 25, messageImages[i].width, messageImages[i].height};
-                    if (CheckCollisionPointRec(GetMousePosition(), imgRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                        selectedMessageIndex = i;
-                        LoadImageForDisplay(imagePath);
-                        showDecodeDialog = true;
-                    }
-                }
-            } else {
-                DrawText(msg->content, msgX + 10, messageY + 25, 12, GRAY);
-            }
-            
-            // Decode button for all images (both sent and received)
-            if (GuiButton((Rectangle){msgX + msgWidth - 80, messageY + msgHeight - 35, 70, 25}, "Decode")) {
-                selectedMessageIndex = i;
-                showDecodeDialog = true;
-            }
-        } else if (msg->type == MSG_AUDIO) {
-            // Audio message
-            DrawText("🎵 Audio:", msgX + 10, messageY + 10, 14, DARKGRAY);
-            
-            char audioPath[512];
-            if (msg->isSent) {
-                const char* filename = strrchr(msg->content, ']');
-                filename = filename ? filename + 2 : msg->content;
-                strcpy(audioPath, filename);
-            } else {
-                const char* filename = strrchr(msg->content, ']');
-                filename = filename ? filename + 2 : msg->content;
-                sprintf(audioPath, "received_%s", filename);
-            }
-            
-            DrawText(msg->content, msgX + 10, messageY + 25, 12, GRAY);
-            
-            // Load audio if not already loaded
-            if (!messageAudioLoaded[i] && FileExists(audioPath)) {
-                messageAudioSounds[i] = LoadSound(audioPath);
-                if (IsSoundValid(messageAudioSounds[i])) {
-                    messageAudioLoaded[i] = true;
-                }
-            }
-            
-            // Audio controls
-            if (messageAudioLoaded[i]) {
-                // Play/Stop button
-                const char* playButtonText = audioPlaying[i] ? "Stop" : "Play";
-                if (GuiButton((Rectangle){msgX + 10, messageY + 45, 50, 25}, playButtonText)) {
-                    if (audioPlaying[i]) {
-                        StopSound(messageAudioSounds[i]);
-                        audioPlaying[i] = false;
-                    } else {
-                        // Stop all other audio first
-                        for (int j = 0; j < MAX_MESSAGES; j++) {
-                            if (audioPlaying[j] && messageAudioLoaded[j]) {
-                                StopSound(messageAudioSounds[j]);
-                                audioPlaying[j] = false;
-                            }
-                        }
-                        PlaySound(messageAudioSounds[i]);
-                        audioPlaying[i] = true;
-                    }
-                }
-                
-                // Check if sound finished playing
-                if (audioPlaying[i] && !IsSoundPlaying(messageAudioSounds[i])) {
-                    audioPlaying[i] = false;
-                }
-            } else {
-                DrawRectangle(msgX + 10, messageY + 45, 100, 30, (Color){173, 216, 230, 255});
-                DrawText("♪ Audio File", msgX + 15, messageY + 55, 12, DARKBLUE);
-            }
-            
-            // Decode button for all audio files
-            if (GuiButton((Rectangle){msgX + msgWidth - 80, messageY + msgHeight - 35, 70, 25}, "Decode")) {
-                selectedMessageIndex = i;
-                showDecodeDialog = true;
-            }
-        }
+        // Subtle shadow effect
+        DrawRectangleShadow((Rectangle){msgX, messageY, msgWidth, msgHeight}, 0.1f, 8, 
+                            bubbleColor, (Color){200, 200, 200, 100});
         
-        // Hidden message indicator
-        if (msg->hasHiddenMessage) {
-            DrawRectangle(msgX + 5, messageY + msgHeight - 20, 15, 15, (Color){255, 193, 7, 255});
-            DrawText("🔒", msgX + 8, messageY + msgHeight - 18, 10, DARKGRAY);
-        }
-        
-        // Timestamp
-        DrawText(msg->timestamp, msgX + msgWidth - 60, messageY + msgHeight - 20, 10, GRAY);
-        
-        messageY += msgHeight + 10;
+        // More refined text rendering
+        DrawTextEx(GetFontDefault(), msg->content, 
+                   (Vector2){msgX + 10, messageY + 10}, 16, 1, (Color){33, 33, 33, 255});
     }
     pthread_mutex_unlock(&messageMutex);
     
@@ -1507,10 +1358,10 @@ void DrawChat() {
     scrollOffset -= wheel * 40;
     if (scrollOffset < 0) scrollOffset = 0;
     
-    // Enhanced input area
+    // Enhanced input area with subtle border
     int inputAreaY = screenHeight - 150;
     DrawRectangle(0, inputAreaY, screenWidth, 150, (Color){240, 240, 240, 255});
-    DrawLine(0, inputAreaY, screenWidth, inputAreaY, LIGHTGRAY);
+    DrawRectangleLinesEx((Rectangle){0, inputAreaY, screenWidth, 150}, 1, (Color){200, 200, 200, 255});
     
     // Tool buttons row
     int buttonY = inputAreaY + 10;
@@ -1648,7 +1499,7 @@ void DrawChat() {
     // Status message
     if (statusTimer > 0) {
         int statusX = screenWidth / 2 - MeasureText(statusMessage, 14) / 2;
-        DrawText(statusMessage, statusX, inputAreaY - 25, 14, (Color){76, 175, 80, 255});
+        DrawText(statusMessage, statusX, inputAreaY - 25, (Color){76, 175, 80, 255});
     }
     
     // Decode dialog
@@ -1660,6 +1511,21 @@ void DrawChat() {
     if (showYTDialog) {
         DrawYTDialog();
     }
+}
+
+// Optional: Add a shadow rendering function
+void DrawRectangleShadow(Rectangle rect, float roundness, int segments, 
+                          Color fillColor, Color shadowColor) {
+    // Draw subtle shadow first
+    DrawRectangleRounded((Rectangle){
+        rect.x + 2, 
+        rect.y + 2, 
+        rect.width, 
+        rect.height
+    }, roundness, segments, shadowColor);
+    
+    // Draw main rectangle
+    DrawRectangleRounded(rect, roundness, segments, fillColor);
 }
 
 int main(void) {
