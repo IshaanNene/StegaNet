@@ -130,7 +130,8 @@ void DownloadYouTubeAudio(const char* url) {
     ShowStatus("Starting download...");
     
     char command[1024];
-    snprintf(command, sizeof(command), "python3 yt_py.py \"%s\" 2>/dev/null", url);
+    // Changed from yt_py.py to yt_downloader.py
+    snprintf(command, sizeof(command), "python3 yt_downloader.py \"%s\" 2>/dev/null", url);
     
     FILE* pipe = popen(command, "r");
     if (!pipe) {
@@ -155,17 +156,14 @@ void DownloadYouTubeAudio(const char* url) {
     char* newline = strchr(result, '\n');
     if (newline) *newline = '\0';
     
-    if (exit_status == 0 && strlen(result) > 0 && 
-        strstr(result, "Error:") == NULL && strstr(result, "ERROR:") == NULL) {
+    if (exit_status == 0 && strlen(result) > 0) {
         // Successful download - update selected file path
         strncpy(selectedFilePath, result, sizeof(selectedFilePath) - 1);
         selectedFilePath[sizeof(selectedFilePath) - 1] = '\0';
         selectedMessageType = MSG_AUDIO;
         ShowStatus("Download complete! Audio ready to encode/send.");
-    } else if (strlen(result) > 0) {
-        ShowStatus(result);
     } else {
-        ShowStatus("Download failed - check URL and internet connection");
+        ShowStatus(result[0] ? result : "Download failed - check URL and internet connection");
     }
     
     isDownloading = false;
