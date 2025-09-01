@@ -1207,7 +1207,8 @@ void DrawYTDialog() {
     
     if (GuiButton((Rectangle){dialogX + 420, dialogY + 85, 70, 30}, downloadButtonText)) {
         if (!isDownloading && strlen(ytUrlBuffer) > 0) {
-            DownloadYouTubeAudio(ytUrlBuffer);
+            // Use the full URL including the prefix
+            DownloadFromYouTube(ytUrlBuffer);
         }
     }
     
