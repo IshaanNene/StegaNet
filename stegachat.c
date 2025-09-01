@@ -115,58 +115,15 @@ void CloseConnection();
 void GenerateRandomAudio();
 void GenerateRandomImage();
 void DownloadYouTubeAudio(const char* url);
-void DownloadYouTubeAudio(const char* url) {
-    if (isDownloading) {
-        ShowStatus("Download already in progress...");
-        return;
-    }
-    
-    if (strlen(url) == 0) {
-        ShowStatus("Please enter a YouTube URL");
-        return;
-    }
-    
-    isDownloading = true;
-    ShowStatus("Starting download...");
-    
+void DownloadFromYouTube(const char* url) {
     char command[1024];
-    // Changed from yt_py.py to yt_downloader.py
-    snprintf(command, sizeof(command), "python3 yt_downloader.py \"%s\" 2>/dev/null", url);
-    
-    FILE* pipe = popen(command, "r");
-    if (!pipe) {
-        ShowStatus("Failed to start download process");
-        isDownloading = false;
-        return;
-    }
-    
-    char result[512] = {0};
-    char line[256];
-    
-    // Read all output from the process
-    while (fgets(line, sizeof(line), pipe) != NULL) {
-        // Only keep the last line (should be the filename or error)
-        strncpy(result, line, sizeof(result) - 1);
-        result[sizeof(result) - 1] = '\0';
-    }
-    
-    int exit_status = pclose(pipe);
-    
-    // Remove newline if present
-    char* newline = strchr(result, '\n');
-    if (newline) *newline = '\0';
-    
-    if (exit_status == 0 && strlen(result) > 0) {
-        // Successful download - update selected file path
-        strncpy(selectedFilePath, result, sizeof(selectedFilePath) - 1);
-        selectedFilePath[sizeof(selectedFilePath) - 1] = '\0';
-        selectedMessageType = MSG_AUDIO;
-        ShowStatus("Download complete! Audio ready to encode/send.");
+    snprintf(command, sizeof(command), "python3 yt_downloader.py \"%s\"", url);
+    int result = system(command);
+    if (result == 0) {
+        ShowStatusMessage("Audio downloaded successfully!");
     } else {
-        ShowStatus(result[0] ? result : "Download failed - check URL and internet connection");
+        ShowStatusMessage("Failed to download audio. Check yt-dlp or URL.");
     }
-    
-    isDownloading = false;
 }
 void GenerateRandomAudio() {
     TraceLog(LOG_INFO, "Generating random audio...");

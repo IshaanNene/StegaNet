@@ -106,6 +106,7 @@ def main():
         return 1
     
     url = sys.argv[1]
+    print(f"Received URL: {url}")  # Debug print
     return download_audio(url)
 
 if __name__ == "__main__":
