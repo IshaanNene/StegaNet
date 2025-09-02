@@ -48,6 +48,12 @@ debug: $(TARGET)
 run: $(TARGET)
 	cd $(BINDIR) && ./stegachat
 
+update:
+	git status
+	git add .
+	git commit -m "Update"
+	git push
+
 help:
 	@echo "Available targets:"
 	@echo "  all          - Build the application"

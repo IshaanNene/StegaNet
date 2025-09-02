@@ -12,10 +12,14 @@ const url = process.argv[2];
 const outTemplate = "%(title)s [%(id)s].%(ext)s";
 
 const dl = spawn("/Users/ishaannene/.pyenv/shims/yt-dlp", [
-    "-x", "--audio-format", "wav",
+    "-x",
+    "--audio-format", "wav",
+    "--audio-quality", "0",
+    "--postprocessor-args", "ffmpeg:-acodec pcm_s16le",
     "--output", outTemplate,
     url
 ]);
+
 
 dl.stderr.on("data", data => {
     process.stderr.write(data);
