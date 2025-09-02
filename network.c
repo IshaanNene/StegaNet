@@ -17,28 +17,22 @@ void InitializeConnection(bool asServer, const char* ip, int port) {
     if (connection.isConnected) {
         CloseConnection();
     }
-    
     connection.localPort = port;
     strncpy(connection.localIP, asServer ? "0.0.0.0" : "127.0.0.1", sizeof(connection.localIP) - 1);
     connection.localIP[sizeof(connection.localIP) - 1] = '\0';
-    
     if (asServer) {
-        // Server mode
         int server_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (server_fd < 0) {
             ShowStatus("Failed to create socket");
             return;
         }
-        
         int opt = 1;
         setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-        
         struct sockaddr_in address;
         memset(&address, 0, sizeof(address));
         address.sin_family = AF_INET;
         address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons(port);
-        
         if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
             ShowStatus("Bind failed");
             close(server_fd);
@@ -50,33 +44,26 @@ void InitializeConnection(bool asServer, const char* ip, int port) {
             close(server_fd);
             return;
         }
-        
         ShowStatus("Waiting for connection...");
-        
         struct sockaddr_in client_addr;
         socklen_t addr_len = sizeof(client_addr);
         memset(&client_addr, 0, sizeof(client_addr));
-        
         connection.socket_fd = accept(server_fd, (struct sockaddr*)&client_addr, &addr_len);
-        
         if (connection.socket_fd < 0) {
             ShowStatus("Accept failed");
             close(server_fd);
             return;
         }
-        
         strncpy(connection.remoteIP, inet_ntoa(client_addr.sin_addr), sizeof(connection.remoteIP) - 1);
         connection.remoteIP[sizeof(connection.remoteIP) - 1] = '\0';
         connection.remotePort = ntohs(client_addr.sin_port);
         close(server_fd);
     } else {
-        // Client mode
         connection.socket_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (connection.socket_fd < 0) {
             ShowStatus("Failed to create socket");
             return;
         }
-        
         struct sockaddr_in server_addr;
         memset(&server_addr, 0, sizeof(server_addr));
         server_addr.sin_family = AF_INET;
@@ -103,8 +90,6 @@ void InitializeConnection(bool asServer, const char* ip, int port) {
     connection.threadActive = true;
     showConnectionDialog = false;
     ShowStatus("Connected!");
-    
-    // Start receive thread
     int result = pthread_create(&connection.receiveThread, NULL, ReceiveMessages, NULL);
     if (result != 0) {
         ShowStatus("Failed to create receive thread");
@@ -117,41 +102,25 @@ void CloseConnection() {
     if (connection.isConnected) {
         connection.isConnected = false;
         connection.threadActive = false;
-        
-        // Shutdown socket to wake up blocking recv
         shutdown(connection.socket_fd, SHUT_RDWR);
         close(connection.socket_fd);
-        
-        // Wait for thread to finish (macOS compatible)
         pthread_join(connection.receiveThread, NULL);
     }
 }
 
 void SendMessage(const char* message, MessageType type) {
     if (!connection.isConnected || !message) return;
-    
-    // Create packet with proper alignment
     unsigned char* packet = (unsigned char*)malloc(BUFFER_SIZE);
     if (!packet) return;
-    
     int offset = 0;
-    
-    // Add message type
     packet[offset++] = (unsigned char)type;
-    
-    // Add message length (ensure proper alignment)
     int msgLen = strlen(message);
     memcpy(packet + offset, &msgLen, sizeof(int));
     offset += sizeof(int);
-    
-    // Add message
     memcpy(packet + offset, message, msgLen);
     offset += msgLen;
-    
-    // Send packet
     ssize_t sent = send(connection.socket_fd, packet, offset, 0);
     free(packet);
-    
     if (sent > 0) {
         AddMessage("You", message, type, true);
     } else {
@@ -164,42 +133,33 @@ void SendFile(const char* filepath, MessageType type) {
         ShowStatus("Cannot send file - not connected or file not found");
         return;
     }
-    
     FILE* file = fopen(filepath, "rb");
     if (!file) {
         ShowStatus("Failed to open file");
         return;
     }
-    
-    // Get file size
     fseek(file, 0, SEEK_END);
     long fileSize = ftell(file);
     fseek(file, 0, SEEK_SET);
     
-    if (fileSize <= 0 || fileSize > 10 * 1024 * 1024) { // 10MB limit
+    if (fileSize <= 0 || fileSize > 10 * 1024 * 1024) { 
         fclose(file);
         ShowStatus("File too large or invalid");
         return;
     }
-    
-    // Read file
     unsigned char* fileData = (unsigned char*)malloc(fileSize);
     if (!fileData) {
         fclose(file);
         ShowStatus("Memory allocation failed");
         return;
     }
-    
     size_t bytesRead = fread(fileData, 1, fileSize, file);
     fclose(file);
-    
     if (bytesRead != fileSize) {
         free(fileData);
         ShowStatus("Failed to read file");
         return;
     }
-    
-    // Create temporary encoded file if hidden message exists
     char actualFilePath[256];
     strncpy(actualFilePath, filepath, sizeof(actualFilePath) - 1);
     actualFilePath[sizeof(actualFilePath) - 1] = '\0';
@@ -213,7 +173,6 @@ void SendFile(const char* filepath, MessageType type) {
             EncodeMessageInAudio(filepath, hiddenMessageBuffer, actualFilePath);
         }
         
-        // Reload the encoded file
         free(fileData);
         file = fopen(actualFilePath, "rb");
         if (!file) {
@@ -235,8 +194,6 @@ void SendFile(const char* filepath, MessageType type) {
         fread(fileData, 1, fileSize, file);
         fclose(file);
     }
-    
-    // Send file info packet
     unsigned char* packet = (unsigned char*)malloc(BUFFER_SIZE);
     if (!packet) {
         free(fileData);
@@ -246,8 +203,6 @@ void SendFile(const char* filepath, MessageType type) {
     
     int offset = 0;
     packet[offset++] = (unsigned char)type;
-    
-    // Add filename
     const char* filename = strrchr(filepath, '/');
     filename = filename ? filename + 1 : filepath;
     int nameLen = strlen(filename);
@@ -256,12 +211,8 @@ void SendFile(const char* filepath, MessageType type) {
     offset += sizeof(int);
     memcpy(packet + offset, filename, nameLen);
     offset += nameLen;
-    
-    // Add file size
     memcpy(packet + offset, &fileSize, sizeof(long));
     offset += sizeof(long);
-    
-    // Send file info
     ssize_t sent = send(connection.socket_fd, packet, offset, 0);
     free(packet);
     
@@ -271,7 +222,6 @@ void SendFile(const char* filepath, MessageType type) {
         return;
     }
     
-    // Send file data in chunks
     size_t sentBytes = 0;
     const size_t chunkSize = 8192;
     
@@ -286,12 +236,10 @@ void SendFile(const char* filepath, MessageType type) {
         }
         
         sentBytes += sent;
-        usleep(1000); // Small delay between chunks
+        usleep(1000); 
     }
     
     free(fileData);
-    
-    // Clean up temporary file
     if (strcmp(actualFilePath, filepath) != 0) {
         remove(actualFilePath);
     }
@@ -354,8 +302,7 @@ void* ReceiveMessages(void* arg) {
             
         } else if (type == MSG_IMAGE || type == MSG_AUDIO) {
             if (offset + sizeof(int) > bytesReceived) continue;
-            
-            // Receive file info
+        
             int nameLen;
             memcpy(&nameLen, buffer + offset, sizeof(int));
             offset += sizeof(int);
@@ -372,11 +319,9 @@ void* ReceiveMessages(void* arg) {
             long fileSize;
             memcpy(&fileSize, buffer + offset, sizeof(long));
             
-            if (fileSize <= 0 || fileSize > 10 * 1024 * 1024) { // 10MB limit
+            if (fileSize <= 0 || fileSize > 10 * 1024 * 1024) { 
                 continue;
             }
-            
-            // Receive file data
             unsigned char* fileData = (unsigned char*)malloc(fileSize);
             if (!fileData) continue;
             
@@ -388,15 +333,12 @@ void* ReceiveMessages(void* arg) {
             }
             
             if (received == fileSize) {
-                // Save file
                 char savePath[512];
                 sprintf(savePath, "received_%s", filename);
                 FILE* saveFile = fopen(savePath, "wb");
                 if (saveFile) {
                     fwrite(fileData, 1, fileSize, saveFile);
                     fclose(saveFile);
-                    
-                    // Try to decode hidden message
                     char* hiddenMsg = NULL;
                     if (type == MSG_IMAGE) {
                         hiddenMsg = DecodeMessageFromImage(savePath);

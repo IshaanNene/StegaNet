@@ -1,4 +1,3 @@
-# Makefile for StegaChat
 CC = gcc
 CFLAGS = -O2
 

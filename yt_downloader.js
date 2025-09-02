@@ -27,7 +27,6 @@ dl.stderr.on("data", data => {
 
 dl.on("close", code => {
     if (code === 0) {
-        // Try to detect output file
         const files = fs.readdirSync(".").filter(f => f.includes(".wav"));
         if (files.length > 0) {
             console.log(files[0]);

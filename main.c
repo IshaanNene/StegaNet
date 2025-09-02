@@ -4,7 +4,6 @@
 #include "ui.h"
 #include "utils.h"
 
-// Define globals here
 ChatMessage messages[MAX_MESSAGES];
 int messageCount = 0;
 ConnectionInfo connection = {0};

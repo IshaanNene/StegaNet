@@ -9,9 +9,8 @@
 #define MAX_MESSAGE_LENGTH 512
 #define MAX_CLIENTS 10
 #define PORT 8888
-#define BUFFER_SIZE 1048576 // 1MB buffer for file transfers
+#define BUFFER_SIZE 1048576
 
-// Message types
 typedef enum {
     MSG_TEXT,
     MSG_IMAGE,
@@ -20,7 +19,6 @@ typedef enum {
     MSG_FILE_END
 } MessageType;
 
-// Chat message structure
 typedef struct {
     char sender[50];
     char content[MAX_MESSAGE_LENGTH];
@@ -32,7 +30,6 @@ typedef struct {
     char hiddenMessage[MAX_MESSAGE_LENGTH];
 } ChatMessage;
 
-// Connection info
 typedef struct {
     char localIP[20];
     char remoteIP[20];
@@ -44,7 +41,6 @@ typedef struct {
     bool threadActive;
 } ConnectionInfo;
 
-// File transfer structure
 typedef struct {
     char filename[256];
     unsigned char* data;
@@ -54,7 +50,6 @@ typedef struct {
     MessageType fileType;
 } FileTransfer;
 
-// Globals
 extern ChatMessage messages[MAX_MESSAGES];
 extern int messageCount;
 extern ConnectionInfo connection;

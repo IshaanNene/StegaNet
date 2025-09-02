@@ -20,13 +20,11 @@ void EncodeMessageInImage(const char* imagePath, const char* message, const char
     }
     
     int messageLen = strlen(message);
-    if (messageLen > 100) { // Limit message length for safety
+    if (messageLen > 100) { 
         UnloadImage(image);
         ShowStatus("Hidden message too long");
         return;
     }
-    
-    // Ensure we have enough pixels
     if (image.width * image.height < (messageLen + 1) * 8 + 32) {
         UnloadImage(image);
         ShowStatus("Image too small for message");
@@ -43,8 +41,6 @@ void EncodeMessageInImage(const char* imagePath, const char* message, const char
     
     Color* pixels = (Color*)image.data;
     int totalPixels = image.width * image.height;
-    
-    // Encode message length in first 32 bits
     for (int i = 0; i < 32; i++) {
         int pixelIndex = i / 4;
         if (pixelIndex >= totalPixels) break;
@@ -62,7 +58,6 @@ void EncodeMessageInImage(const char* imagePath, const char* message, const char
         if (component) *component = (*component & 0xFE) | bit;
     }
     
-    // Encode message with null terminator
     for (int i = 0; i <= messageLen; i++) {
         char ch = (i == messageLen) ? '\0' : message[i];
         for (int bit = 0; bit < 8; bit++) {
@@ -107,8 +102,6 @@ char* DecodeMessageFromImage(const char* imagePath) {
     
     Color* pixels = (Color*)image.data;
     int totalPixels = image.width * image.height;
-    
-    // Decode message length
     int messageLen = 0;
     for (int i = 0; i < 32; i++) {
         int pixelIndex = i / 4;
@@ -128,12 +121,11 @@ char* DecodeMessageFromImage(const char* imagePath) {
         messageLen |= (bit << (31 - i));
     }
     
-    if (messageLen <= 0 || messageLen > 100) { // Limit for safety
+    if (messageLen <= 0 || messageLen > 100) { 
         UnloadImage(image);
         return NULL;
     }
     
-    // Decode message
     char* decodedMessage = (char*)malloc(messageLen + 1);
     if (!decodedMessage) {
         UnloadImage(image);
@@ -181,13 +173,12 @@ void EncodeMessageInAudio(const char* audioPath, const char* message, const char
     }
     
     int messageLen = strlen(message);
-    if (messageLen > 100) { // Limit for safety
+    if (messageLen > 100) { 
         UnloadWave(wave);
         ShowStatus("Hidden message too long for audio");
         return;
     }
     
-    // Ensure 16-bit format
     if (wave.sampleSize != 16) {
         WaveFormat(&wave, wave.sampleRate, 16, wave.channels);
     }
@@ -201,21 +192,18 @@ void EncodeMessageInAudio(const char* audioPath, const char* message, const char
     short* samples = (short*)wave.data;
     int totalSamples = wave.frameCount * wave.channels;
     
-    // Check if we have enough samples
     if (totalSamples < (messageLen + 1) * 8 + 32) {
         UnloadWave(wave);
         ShowStatus("Audio file too short for message");
         return;
     }
     
-    // Encode message length
     for (int i = 0; i < 32 && i < totalSamples; i++) {
         int bit = (messageLen >> (31 - i)) & 1;
         if (bit) samples[i] |= 1;
         else samples[i] &= ~1;
     }
     
-    // Encode message
     for (int i = 0; i <= messageLen; i++) {
         char ch = (i == messageLen) ? '\0' : message[i];
         for (int bit = 0; bit < 8; bit++) {
@@ -254,7 +242,6 @@ char* DecodeMessageFromAudio(const char* audioPath) {
     short* samples = (short*)wave.data;
     int totalSamples = wave.frameCount * wave.channels;
     
-    // Decode message length
     int messageLen = 0;
     for (int i = 0; i < 32 && i < totalSamples; i++) {
         int bit = samples[i] & 1;
@@ -266,7 +253,6 @@ char* DecodeMessageFromAudio(const char* audioPath) {
         return NULL;
     }
     
-    // Decode message
     char* decodedMessage = (char*)malloc(messageLen + 1);
     if (!decodedMessage) {
         UnloadWave(wave);

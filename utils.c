@@ -12,7 +12,6 @@ void AddMessage(const char* sender, const char* content, MessageType type, bool 
     if (!sender || !content) return;
     
     if (messageCount >= MAX_MESSAGES) {
-        // Shift messages up
         for (int i = 0; i < MAX_MESSAGES - 1; i++) {
             messages[i] = messages[i + 1];
         }
@@ -29,7 +28,6 @@ void AddMessage(const char* sender, const char* content, MessageType type, bool 
     msg->hasHiddenMessage = false;
     msg->hiddenMessage[0] = '\0';
     
-    // Get timestamp
     time_t now = time(NULL);
     struct tm* tm_info = localtime(&now);
     if (tm_info) {
@@ -83,16 +81,12 @@ void DownloadFromYoutube(const char* url) {
     char result[512] = {0};
     char line[256];
     
-    // Read all output from the process
     while (fgets(line, sizeof(line), pipe) != NULL) {
-        // Only keep the last line (should be the filename or error)
         strncpy(result, line, sizeof(result) - 1);
         result[sizeof(result) - 1] = '\0';
     }
     
     int exit_status = pclose(pipe);
-    
-    // Remove newline if present
     char* newline = strchr(result, '\n');
     if (newline) *newline = '\0';
     
@@ -115,7 +109,7 @@ void GenerateRandomAudio() {
     TraceLog(LOG_INFO, "Generating random audio...");
     
     int sampleRate = 44100;
-    int duration = 5; // 5 seconds
+    int duration = 5; 
     int sampleCount = sampleRate * duration;
     
     Wave wave = { 0 };
@@ -130,12 +124,11 @@ void GenerateRandomAudio() {
         return;
     }
     
-    // Generate a simple sine wave with some noise
     for (int i = 0; i < sampleCount; i++) {
         float t = (float)i / sampleRate;
-        float frequency = 440.0f + sin(t * 2.0f) * 100.0f; // Varying frequency
+        float frequency = 440.0f + sin(t * 2.0f) * 100.0f; 
         float sample = sin(2.0f * PI * frequency * t) * 0.5f;
-        sample += (GetRandomValue(-1000, 1000) / 10000.0f) * 0.1f; // Add some noise
+        sample += (GetRandomValue(-1000, 1000) / 10000.0f) * 0.1f;
         samples[i] = (short)(sample * 32767);
     }
     
@@ -146,7 +139,6 @@ void GenerateRandomAudio() {
     
     if (success) {
         ShowStatus("Random audio generated: randomAudio.wav");
-        // Auto-select the generated file
         strcpy(selectedFilePath, "randomAudio.wav");
         selectedMessageType = MSG_AUDIO;
     } else {
@@ -166,7 +158,6 @@ void GenerateRandomImage() {
         return;
     }
 
-    // Color every pixel with a random color
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             Color color = {
@@ -184,7 +175,6 @@ void GenerateRandomImage() {
     
     if (success) {
         ShowStatus("Random image generated: randomImage.png");
-        // Auto-select the generated file
         strcpy(selectedFilePath, "randomImage.png");
         selectedMessageType = MSG_IMAGE;
     } else {
@@ -200,7 +190,6 @@ void LoadImageForDisplay(const char* imagePath) {
     if (FileExists(imagePath)) {
         Image image = LoadImage(imagePath);
         if (image.data != NULL) {
-            // Resize image if too large for display
             if (image.width > 400 || image.height > 300) {
                 float scale = fminf(400.0f / image.width, 300.0f / image.height);
                 int newWidth = (int)(image.width * scale);
@@ -212,12 +201,10 @@ void LoadImageForDisplay(const char* imagePath) {
             imageLoaded = true;
         }
 
-    // Cleanup textures
     if (imageLoaded) {
         UnloadTexture(currentImageTexture);
     }
     
-    // Cleanup message images and audio
     for (int i = 0; i < MAX_MESSAGES; i++) {
         if (messageImageLoaded[i]) {
             UnloadTexture(messageImages[i]);
