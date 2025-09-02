@@ -65,7 +65,7 @@ void DrawDecodeDialog() {
     
     DrawRectangle(dialogX, dialogY, dialogWidth, dialogHeight, WHITE);
     DrawRectangleLines(dialogX, dialogY, dialogWidth, dialogHeight, DARKGRAY);
-    DrawText("Decode Hidden Message", dialogX + 20, dialogY + 20, 20, (Color){33, 37, 41, 255});
+    DrawText("Decode Hidden Message", dialogX + 20, dialogY + 20, 18, DARKGRAY);
     if (selectedMessageIndex >= 0 && selectedMessageIndex < messageCount) {
         ChatMessage* msg = &messages[selectedMessageIndex];
         char msgInfo[256];
@@ -88,7 +88,7 @@ void DrawDecodeDialog() {
                 }
             }
         }
-        if (GuiButton((Rectangle){dialogX + 20, dialogY + 320, 130, 36}, "Decode This")) {
+        if (GuiButton((Rectangle){dialogX + 20, dialogY + 320, 100, 30}, "Decode This")) {
             char filePath[512];
             if (msg->type == MSG_IMAGE) {
                 sprintf(filePath, "received_%s", strrchr(msg->content, ']') + 2);
@@ -116,10 +116,10 @@ void DrawDecodeDialog() {
         }
     } else {
         DrawText("File path to decode:", dialogX + 20, dialogY + 60, 14, DARKGRAY);
-        if (GuiTextBox((Rectangle){dialogX + 20, dialogY + 80, 380, 32}, decodeFilePath, 255, decodeFilePathEditMode)) {
+        if (GuiTextBox((Rectangle){dialogX + 20, dialogY + 80, 350, 30}, decodeFilePath, 255, decodeFilePathEditMode)) {
             decodeFilePathEditMode = !decodeFilePathEditMode;
         }
-        if (GuiButton((Rectangle){dialogX + 410, dialogY + 80, 70, 32}, "Decode")) {
+        if (GuiButton((Rectangle){dialogX + 380, dialogY + 80, 80, 30}, "Decode")) {
             if (strlen(decodeFilePath) > 0 && FileExists(decodeFilePath)) {
                 char* decoded = NULL;
                 const char* ext = strrchr(decodeFilePath, '.');
@@ -153,13 +153,13 @@ void DrawDecodeDialog() {
     }
     
     if (strlen(decodedHiddenMessage) > 0) {
-        DrawText("Decoded message:", dialogX + 20, dialogY + 280, 14, (Color){52, 58, 64, 255});
-        DrawRectangle(dialogX + 20, dialogY + 300, dialogWidth - 40, 44, (Color){245, 245, 245, 255});
-        DrawRectangleLines(dialogX + 20, dialogY + 300, dialogWidth - 40, 44, (Color){200, 200, 200, 255});
-        DrawText(decodedHiddenMessage, dialogX + 25, dialogY + 314, 12, DARKGRAY);
+        DrawText("Decoded message:", dialogX + 20, dialogY + 280, 14, (Color){255, 152, 0, 255});
+        DrawRectangle(dialogX + 20, dialogY + 300, dialogWidth - 40, 40, (Color){255, 248, 225, 255});
+        DrawRectangleLines(dialogX + 20, dialogY + 300, dialogWidth - 40, 40, (Color){255, 193, 7, 255});
+        DrawText(decodedHiddenMessage, dialogX + 25, dialogY + 315, 12, DARKGRAY);
     }
     
-    if (GuiButton((Rectangle){dialogX + dialogWidth - 90, dialogY + 358, 80, 32}, "Close")) {
+    if (GuiButton((Rectangle){dialogX + dialogWidth - 80, dialogY + 360, 60, 25}, "Close")) {
         showDecodeDialog = false;
         selectedMessageIndex = -1;
         decodedHiddenMessage[0] = '\0';
@@ -182,11 +182,11 @@ void DrawYTDialog() {
     
     DrawRectangle(dialogX, dialogY, dialogWidth, dialogHeight, WHITE);
     DrawRectangleLines(dialogX, dialogY, dialogWidth, dialogHeight, DARKGRAY);
-    DrawText("YouTube Audio Download", dialogX + 20, dialogY + 20, 20, (Color){33, 37, 41, 255});
+    DrawText("YouTube Audio Download", dialogX + 20, dialogY + 20, 18, DARKGRAY);
     DrawText("Enter any YouTube URL format:", dialogX + 20, dialogY + 60, 14, GRAY);
     DrawText("(Full URLs, youtu.be links, video IDs, etc.)", dialogX + 20, dialogY + 80, 12, LIGHTGRAY);
     
-    if (GuiTextBox((Rectangle){dialogX + 20, dialogY + 105, 360, 32}, 
+    if (GuiTextBox((Rectangle){dialogX + 20, dialogY + 105, 350, 30}, 
                    ytUrlBuffer, 511, ytUrlEditMode)) {
         ytUrlEditMode = !ytUrlEditMode;
     }
@@ -194,7 +194,7 @@ void DrawYTDialog() {
     const char* downloadButtonText = isDownloading ? "Downloading..." : "Download";
     Color downloadButtonColor = isDownloading ? LIGHTGRAY : (Color){76, 175, 80, 255};
     
-    if (GuiButton((Rectangle){dialogX + 390, dialogY + 105, 90, 32}, downloadButtonText)) {
+    if (GuiButton((Rectangle){dialogX + 380, dialogY + 105, 90, 30}, downloadButtonText)) {
         if (!isDownloading && strlen(ytUrlBuffer) > 0) {
             DownloadFromYoutube(ytUrlBuffer);
         }
@@ -228,7 +228,7 @@ void DrawYTDialog() {
         }
     }
     
-    if (GuiButton((Rectangle){dialogX + dialogWidth - 90, dialogY + 258, 80, 32}, "Close")) {
+    if (GuiButton((Rectangle){dialogX + dialogWidth - 80, dialogY + 260, 60, 25}, "Close")) {
         showYTDialog = false;
         ytUrlBuffer[0] = '\0';
     }
@@ -244,9 +244,11 @@ void DrawChat() {
                            (Color){229, 221, 213, 255}, 
                            (Color){219, 209, 199, 255});
     
-    DrawRectangle(0, 0, screenWidth, 70, (Color){33, 37, 41, 255});
-    DrawText("StegaChat", 20, 20, 22, RAYWHITE);
-    DrawText(connection.isConnected ? "Online" : "Offline", 20, 45, 14, (Color){180, 180, 180, 255});
+    DrawRectangle(0, 0, screenWidth, 70, (Color){7, 94, 84, 255});
+    DrawCircle(50, 35, 20, WHITE);
+    DrawText("C", 44, 27, 20, (Color){7, 94, 84, 255});
+    DrawText(connection.isConnected ? "Contact" : "Not Connected", 80, 20, 18, WHITE);
+    DrawText(connection.isConnected ? "Online" : "Offline", 80, 42, 14, (Color){200, 200, 200, 255});
     if (connection.isConnected) {
         char connInfo[100];
         sprintf(connInfo, "Connected to: %s:%d", connection.remoteIP, connection.remotePort);
@@ -255,7 +257,7 @@ void DrawChat() {
     }
     
     if (connection.isConnected) {
-        if (GuiButton((Rectangle){screenWidth - 120, 40, 100, 32}, "Disconnect")) {
+        if (GuiButton((Rectangle){screenWidth - 100, 40, 80, 25}, "Disconnect")) {
             CloseConnection();
             showConnectionDialog = true;
         }
@@ -291,7 +293,7 @@ void DrawChat() {
             
             DrawText(text, msgX + 10, textY, 14, DARKGRAY);
         } else if (msg->type == MSG_IMAGE) {
-            DrawText("Image:", msgX + 10, messageY + 10, 14, DARKGRAY);
+            DrawText("🖼️ Image:", msgX + 10, messageY + 10, 14, DARKGRAY);
             
             char imagePath[512];
             if (msg->isSent) {
@@ -338,7 +340,7 @@ void DrawChat() {
                 showDecodeDialog = true;
             }
         } else if (msg->type == MSG_AUDIO) {
-            DrawText("Audio:", msgX + 10, messageY + 10, 14, DARKGRAY);
+            DrawText("🎵 Audio:", msgX + 10, messageY + 10, 14, DARKGRAY);
             
             char audioPath[512];
             if (msg->isSent) {
@@ -394,7 +396,7 @@ void DrawChat() {
         
         if (msg->hasHiddenMessage) {
             DrawRectangle(msgX + 5, messageY + msgHeight - 20, 15, 15, (Color){255, 193, 7, 255});
-            DrawRectangleLines(msgX + 5, messageY + msgHeight - 20, 15, 15, DARKGRAY);
+            DrawText("🔒", msgX + 8, messageY + msgHeight - 18, 10, DARKGRAY);
         }
         
         DrawText(msg->timestamp, msgX + msgWidth - 60, messageY + msgHeight - 20, 10, GRAY);
@@ -412,15 +414,22 @@ void DrawChat() {
     DrawLine(0, inputAreaY, screenWidth, inputAreaY, LIGHTGRAY);
     
     int buttonY = inputAreaY + 10;
-    int buttonWidth = 110;
-    int buttonHeight = 36;
-    int buttonSpacing = 125;
+    int buttonWidth = 70;
+    int buttonSpacing = 80;
     int startX = 20;
-
-    if (GuiButton((Rectangle){startX, buttonY, buttonWidth, buttonHeight}, "YouTube Audio")) {
+    
+    if (GuiButton((Rectangle){startX, buttonY, buttonWidth, 25}, "Gen Image")) {
+        GenerateRandomImage();
+    }
+    
+    if (GuiButton((Rectangle){startX + buttonSpacing, buttonY, buttonWidth, 25}, "Gen Audio")) {
+        GenerateRandomAudio();
+    }
+    
+    if (GuiButton((Rectangle){startX + buttonSpacing * 2, buttonY, buttonWidth, 25}, "YT Download")) {
         showYTDialog = true;
     }
-    if (GuiButton((Rectangle){startX + buttonSpacing * 1, buttonY, buttonWidth, buttonHeight}, "Encode")) {
+    if (GuiButton((Rectangle){startX + buttonSpacing * 3, buttonY, buttonWidth, 25}, "Encode")) {
         if (strlen(selectedFilePath) > 0 && strlen(hiddenMessageBuffer) > 0) {
             char outputPath[512];
             sprintf(outputPath, "encoded_%d_%s", (int)time(NULL), 
@@ -439,7 +448,7 @@ void DrawChat() {
             ShowStatus("Need file path and hidden message to encode");
         }
     }
-    if (GuiButton((Rectangle){startX + buttonSpacing * 2, buttonY, buttonWidth, buttonHeight}, "Send Encoded")) {
+    if (GuiButton((Rectangle){startX + buttonSpacing * 4, buttonY, buttonWidth, 25}, "Send Encoded")) {
         if (connection.isConnected && strlen(selectedFilePath) > 0 && FileExists(selectedFilePath)) {
             if (selectedMessageType == MSG_IMAGE || selectedMessageType == MSG_AUDIO) {
                 SendFile(selectedFilePath, selectedMessageType);
@@ -454,39 +463,42 @@ void DrawChat() {
         }
     }
     
-    if (GuiButton((Rectangle){startX + buttonSpacing * 3, buttonY, buttonWidth, buttonHeight}, "Decode File")) {
+    if (GuiButton((Rectangle){startX + buttonSpacing * 5, buttonY, buttonWidth, 25}, "Decode File")) {
         showDecodeDialog = true;
         selectedMessageIndex = -1; 
     }
     buttonY += 35;
-    DrawText("Type:", startX, buttonY + 8, 14, DARKGRAY);
+    DrawText("Type:", startX, buttonY + 5, 14, DARKGRAY);
     
-    if (GuiButton((Rectangle){startX + 50, buttonY, 70, 32}, selectedMessageType == MSG_TEXT ? "TEXT" : "Text")) {
+    if (GuiButton((Rectangle){startX + 50, buttonY, 60, 25}, selectedMessageType == MSG_TEXT ? "TEXT" : "Text")) {
         selectedMessageType = MSG_TEXT;
     }
-    if (GuiButton((Rectangle){startX + 130, buttonY, 70, 32}, selectedMessageType == MSG_IMAGE ? "IMAGE" : "Image")) {
+    if (GuiButton((Rectangle){startX + 120, buttonY, 60, 25}, selectedMessageType == MSG_IMAGE ? "IMAGE" : "Image")) {
         selectedMessageType = MSG_IMAGE;
     }
-    if (GuiButton((Rectangle){startX + 210, buttonY, 70, 32}, selectedMessageType == MSG_AUDIO ? "AUDIO" : "Audio")) {
+    if (GuiButton((Rectangle){startX + 190, buttonY, 60, 25}, selectedMessageType == MSG_AUDIO ? "AUDIO" : "Audio")) {
         selectedMessageType = MSG_AUDIO;
     }
     if (selectedMessageType != MSG_TEXT) {
         buttonY += 35;
-        DrawText("File:", startX, buttonY + 8, 12, DARKGRAY);
-        if (GuiTextBox((Rectangle){startX + 40, buttonY, 500, 32}, selectedFilePath, 255, filePathEditMode)) {
+        DrawText("File:", startX, buttonY + 5, 12, DARKGRAY);
+        if (GuiTextBox((Rectangle){startX + 40, buttonY, 400, 25}, selectedFilePath, 255, filePathEditMode)) {
             filePathEditMode = !filePathEditMode;
+        }
+        if (GuiButton((Rectangle){startX + 450, buttonY, 60, 25}, "Browse")) {
+            ShowStatus("Use file picker or type path manually");
         }
     }
     if (selectedMessageType == MSG_IMAGE || selectedMessageType == MSG_AUDIO) {
         buttonY += 35;
-        DrawText("Hidden:", startX, buttonY + 8, 12, GRAY);
-        if (GuiTextBox((Rectangle){startX + 60, buttonY, screenWidth - 220, 32}, hiddenMessageBuffer, MAX_MESSAGE_LENGTH - 1, hiddenMessageEditMode)) {
+        DrawText("Hidden:", startX, buttonY + 5, 12, GRAY);
+        if (GuiTextBox((Rectangle){startX + 60, buttonY, screenWidth - 200, 25}, hiddenMessageBuffer, MAX_MESSAGE_LENGTH - 1, hiddenMessageEditMode)) {
             hiddenMessageEditMode = !hiddenMessageEditMode;
         }
     }
     buttonY += 35;
-    DrawText("Message:", startX, buttonY + 8, 14, DARKGRAY);
-    if (GuiTextBox((Rectangle){startX + 90, buttonY, screenWidth - 220, 32}, inputBuffer, MAX_MESSAGE_LENGTH - 1, inputEditMode)) {
+    DrawText("Message:", startX, buttonY + 5, 14, DARKGRAY);
+    if (GuiTextBox((Rectangle){startX + 70, buttonY, screenWidth - 180, 25}, inputBuffer, MAX_MESSAGE_LENGTH - 1, inputEditMode)) {
         inputEditMode = !inputEditMode;
     }
     bool canSend = false;
@@ -498,7 +510,7 @@ void DrawChat() {
     }
     
     Color sendButtonColor = canSend ? (Color){76, 175, 80, 255} : LIGHTGRAY;
-    if (GuiButton((Rectangle){screenWidth - 110, buttonY, 90, 36}, "Send")) {
+    if (GuiButton((Rectangle){screenWidth - 90, buttonY, 70, 25}, "Send")) {
         if (canSend && connection.isConnected) {
             if (selectedMessageType == MSG_TEXT) {
                 SendMessage(inputBuffer, MSG_TEXT);
