@@ -13,13 +13,11 @@
 #include "network.h"
 #include "steganography.h"
 
-// Animation and visual enhancement helpers
 static float dialogAnimTime = 0.0f;
 static float pulseTime = 0.0f;
-static float hoverTime[20] = {0}; // For button hover animations
+static float hoverTime[20] = {0}; 
 static int hoveredButton = -1;
 
-// Enhanced colors
 #define MODERN_DARK      (Color){26, 32, 44, 255}
 #define MODERN_ACCENT    (Color){99, 102, 241, 255}
 #define MODERN_SUCCESS   (Color){16, 185, 129, 255}
@@ -31,15 +29,12 @@ static int hoveredButton = -1;
 #define MODERN_TEXT      (Color){51, 65, 85, 255}
 #define MODERN_TEXT_LIGHT (Color){100, 116, 139, 255}
 
-// Glass morphism effect
 void DrawGlassMorphRect(Rectangle rect, Color color, float blur) {
-    // Background blur simulation
     DrawRectangleRounded(rect, 0.12f, 16, (Color){color.r, color.g, color.b, (unsigned char)(color.a * 0.1f)});
     DrawRectangleRounded(rect, 0.12f, 16, (Color){255, 255, 255, 25});
     DrawRectangleRoundedLines(rect, 0.12f, 16, (Color){255, 255, 255, 50});
 }
 
-// Enhanced button with hover and pulse effects
 bool DrawEnhancedButton(Rectangle rect, const char* text, Color normalColor, Color hoverColor, int buttonId) {
     bool isHovered = CheckCollisionPointRec(GetMousePosition(), rect);
     bool clicked = false;
@@ -51,7 +46,6 @@ bool DrawEnhancedButton(Rectangle rect, const char* text, Color normalColor, Col
         hoverTime[buttonId] = fmaxf(hoverTime[buttonId] - GetFrameTime() * 4.0f, 0.0f);
     }
     
-    // Interpolate colors based on hover
     Color currentColor = {
         (unsigned char)(normalColor.r + (hoverColor.r - normalColor.r) * hoverTime[buttonId]),
         (unsigned char)(normalColor.g + (hoverColor.g - normalColor.g) * hoverTime[buttonId]),
@@ -59,11 +53,9 @@ bool DrawEnhancedButton(Rectangle rect, const char* text, Color normalColor, Col
         255
     };
     
-    // Shadow effect
     Rectangle shadowRect = {rect.x + 2, rect.y + 4, rect.width, rect.height};
     DrawRectangleRounded(shadowRect, 0.08f, 12, (Color){0, 0, 0, 20});
     
-    // Main button with scale effect
     float scale = 1.0f + hoverTime[buttonId] * 0.02f;
     Rectangle scaledRect = {
         rect.x - (rect.width * scale - rect.width) / 2,
@@ -75,12 +67,11 @@ bool DrawEnhancedButton(Rectangle rect, const char* text, Color normalColor, Col
     DrawRectangleRounded(scaledRect, 0.08f, 12, currentColor);
     DrawRectangleRoundedLines(scaledRect, 0.0812, 1, (Color){255, 255, 255, (unsigned char)(100 * hoverTime[buttonId])});
     
-    // Text with shadow
     int textWidth = MeasureText(text, 14);
     int textX = rect.x + (rect.width - textWidth) / 2;
     int textY = rect.y + (rect.height - 14) / 2;
     
-    DrawText(text, textX + 1, textY + 1, 14, (Color){0, 0, 0, 30}); // Shadow
+    DrawText(text, textX + 1, textY + 1, 14, (Color){0, 0, 0, 30}); 
     DrawText(text, textX, textY, 14, WHITE);
     
     if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -94,21 +85,16 @@ void DrawConnectionDialog() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
     
-    // Update animation
     dialogAnimTime += GetFrameTime();
     float animScale = fminf(dialogAnimTime * 4.0f, 1.0f);
-    animScale = 1.0f - powf(1.0f - animScale, 3.0f); // Ease out cubic
-    
-    // Modern dark overlay with blur effect
+    animScale = 1.0f - powf(1.0f - animScale, 3.0f); 
     DrawRectangle(0, 0, screenWidth, screenHeight, (Color){0, 0, 0, 120});
     
-    // Animated dialog box with glass morphism
     int dialogWidth = 450;
     int dialogHeight = 380;
     int dialogX = (screenWidth - dialogWidth) / 2;
     int dialogY = (screenHeight - dialogHeight) / 2;
     
-    // Scale animation
     Rectangle dialogRect = {
         dialogX + dialogWidth * (1 - animScale) / 2,
         dialogY + dialogHeight * (1 - animScale) / 2,
@@ -116,10 +102,8 @@ void DrawConnectionDialog() {
         dialogHeight * animScale
     };
     
-    // Glass morphism background
     DrawGlassMorphRect(dialogRect, MODERN_SURFACE, 10.0f);
     
-    // Modern gradient header
     Rectangle headerRect = {dialogRect.x, dialogRect.y, dialogRect.width, 60};
     DrawRectangleRounded(headerRect, 0.12f, 16, MODERN_ACCENT);
     DrawRectangleRounded((Rectangle){headerRect.x, headerRect.y + 30, headerRect.width, 30}, 0.0f, 0, 
@@ -129,9 +113,7 @@ void DrawConnectionDialog() {
     DrawText("StegaChat", dialogRect.x + 30, dialogRect.y + 20, 24, WHITE);
     DrawText("Secure Connection Setup", dialogRect.x + 30, dialogRect.y + 45, 12, (Color){255, 255, 255, 180});
     
-    // Connection icon
     DrawCircle(dialogRect.x + dialogRect.width - 40, dialogRect.y + 30, 15, (Color){255, 255, 255, 50});
-    DrawText("🔐", dialogRect.x + dialogRect.width - 47, dialogRect.y + 22, 16, WHITE);
     
     // Modern toggle switch for server/client
     int toggleY = dialogRect.y + 90;
@@ -152,7 +134,6 @@ void DrawConnectionDialog() {
         isServer = !isServer;
     }
     
-    // Enhanced input fields
     if (!isServer) {
         DrawText("Server Address", dialogRect.x + 50, dialogRect.y + 150, 12, MODERN_TEXT_LIGHT);
         Rectangle ipRect = {dialogRect.x + 50, dialogRect.y + 170, 250, 40};
@@ -163,12 +144,10 @@ void DrawConnectionDialog() {
             serverIPEditMode = !serverIPEditMode;
         }
         
-        // IP validation indicator
-        bool validIP = strlen(serverIPBuffer) > 6; // Simple check
+        bool validIP = strlen(serverIPBuffer) > 6; 
         DrawCircle(dialogRect.x + 315, dialogRect.y + 190, 6, validIP ? MODERN_SUCCESS : MODERN_ERROR);
     }
     
-    // Port input with validation
     DrawText("Port Number", dialogRect.x + 50, dialogRect.y + 230, 12, MODERN_TEXT_LIGHT);
     Rectangle portRect = {dialogRect.x + 50, dialogRect.y + 250, 120, 40};
     DrawRectangleRounded(portRect, 0.06f, 8, MODERN_SURFACE_2);
@@ -178,19 +157,16 @@ void DrawConnectionDialog() {
         portEditMode = !portEditMode;
     }
     
-    // Port validation
     int port = atoi(portBuffer);
     bool validPort = port > 0 && port < 65536;
     DrawCircle(dialogRect.x + 185, dialogRect.y + 270, 6, validPort ? MODERN_SUCCESS : MODERN_ERROR);
-    
-    // Enhanced connect button with pulse animation
+
     pulseTime += GetFrameTime();
     float pulse = (sinf(pulseTime * 3.0f) + 1.0f) / 2.0f;
     Rectangle connectRect = {dialogRect.x + 180, dialogRect.y + 310, 120, 45};
     
     Color connectColor = validPort ? MODERN_SUCCESS : MODERN_TEXT_LIGHT;
     if (validPort) {
-        // Pulse ring effect
         DrawCircleLines(connectRect.x + connectRect.width/2, connectRect.y + connectRect.height/2, 
                        30 + pulse * 5, (Color){connectColor.r, connectColor.g, connectColor.b, (unsigned char)(50 * pulse)});
     }
@@ -204,7 +180,6 @@ void DrawConnectionDialog() {
         }
     }
     
-    // Enhanced status display
     if (strlen(statusMessage) > 0 && statusTimer > 0) {
         Rectangle statusRect = {dialogRect.x + 20, dialogRect.y + dialogRect.height - 40, dialogRect.width - 40, 25};
         Color statusColor = strstr(statusMessage, "Error") ? MODERN_ERROR : MODERN_WARNING;
@@ -218,23 +193,15 @@ void DrawConnectionDialog() {
 void DrawDecodeDialog() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
-    
-    // Simple overlay without animation complications
     DrawRectangle(0, 0, screenWidth, screenHeight, (Color){0, 0, 0, 120});
-    
-    // Fixed dialog dimensions and positioning
     int dialogWidth = 600;
     int dialogHeight = 500;
     int dialogX = (screenWidth - dialogWidth) / 2;
     int dialogY = (screenHeight - dialogHeight) / 2;
     
     Rectangle dialogRect = {dialogX, dialogY, dialogWidth, dialogHeight};
-    
-    // Simple background without glass effects
     DrawRectangleRounded(dialogRect, 0.08f, 12, MODERN_SURFACE);
     DrawRectangleRoundedLines(dialogRect, 0.08f, 12, MODERN_BORDER);
-    
-    // Clean header
     Rectangle headerRect = {dialogRect.x, dialogRect.y, dialogRect.width, 60};
     DrawRectangleRounded(headerRect, 0.08f, 12, MODERN_WARNING);
     
@@ -245,8 +212,6 @@ void DrawDecodeDialog() {
     
     if (selectedMessageIndex >= 0 && selectedMessageIndex < messageCount) {
         ChatMessage* msg = &messages[selectedMessageIndex];
-        
-        // Message info - simplified
         DrawText("Decoding from selected message:", dialogRect.x + 20, contentY, 14, MODERN_TEXT);
         
         char msgInfo[256];
@@ -255,7 +220,6 @@ void DrawDecodeDialog() {
         
         contentY += 60;
         
-        // Image display - fixed sizing and positioning
         if (msg->type == MSG_IMAGE && !msg->isSent) {
             char imagePath[512];
             sprintf(imagePath, "received_%s", strrchr(msg->content, ']') + 2);
@@ -264,7 +228,6 @@ void DrawDecodeDialog() {
                 if (!imageLoaded) {
                     Image img = LoadImage(imagePath);
                     if (img.data != NULL) {
-                        // Constrain image size properly
                         float maxWidth = 300.0f;
                         float maxHeight = 200.0f;
                         float scale = fminf(maxWidth / img.width, maxHeight / img.height);
@@ -280,11 +243,9 @@ void DrawDecodeDialog() {
                 }
                 
                 if (imageLoaded) {
-                    // Center the image properly
                     int imgX = dialogRect.x + (dialogRect.width - currentImageTexture.width) / 2;
                     int imgY = contentY;
                     
-                    // Simple image display
                     DrawTexture(currentImageTexture, imgX, imgY, WHITE);
                     DrawRectangleLinesEx((Rectangle){imgX, imgY, currentImageTexture.width, currentImageTexture.height}, 
                                        1, MODERN_BORDER);
@@ -294,7 +255,6 @@ void DrawDecodeDialog() {
             }
         }
         
-        // Decode button - positioned properly
         if (DrawEnhancedButton((Rectangle){dialogRect.x + 30, contentY, 120, 35}, "Decode Message", MODERN_WARNING, MODERN_ERROR, 1)) {
             char filePath[512];
             if (msg->type == MSG_IMAGE) {
@@ -322,7 +282,6 @@ void DrawDecodeDialog() {
             }
         }
     } else {
-        // Manual file decode section - simplified
         DrawText("File path to decode:", dialogRect.x + 20, contentY, 14, MODERN_TEXT);
         
         Rectangle fileRect = {dialogRect.x + 20, contentY + 25, 400, 30};
@@ -333,7 +292,6 @@ void DrawDecodeDialog() {
             decodeFilePathEditMode = !decodeFilePathEditMode;
         }
         
-        // Decode button
         if (DrawEnhancedButton((Rectangle){dialogRect.x + 440, contentY + 25, 80, 30}, "Decode", MODERN_WARNING, MODERN_ERROR, 3)) {
             if (strlen(decodeFilePath) > 0 && FileExists(decodeFilePath)) {
                 char* decoded = NULL;
@@ -341,7 +299,6 @@ void DrawDecodeDialog() {
                 const char* ext = strrchr(decodeFilePath, '.');
                 if (ext && (strcmp(ext, ".png") == 0 || strcmp(ext, ".jpg") == 0 || strcmp(ext, ".jpeg") == 0)) {
                     decoded = DecodeMessageFromImage(decodeFilePath);
-                    // Load image for display
                     if (!imageLoaded) {
                         Image img = LoadImage(decodeFilePath);
                         if (img.data != NULL) {
@@ -377,7 +334,6 @@ void DrawDecodeDialog() {
         
         contentY += 80;
         
-        // Show loaded image if any
         if (imageLoaded) {
             int imgX = dialogRect.x + (dialogRect.width - currentImageTexture.width) / 2;
             int imgY = contentY;
@@ -388,8 +344,6 @@ void DrawDecodeDialog() {
             contentY += currentImageTexture.height + 20;
         }
     }
-    
-    // Decoded message display - fixed positioning
     if (strlen(decodedHiddenMessage) > 0) {
         Rectangle resultRect = {dialogRect.x + 20, dialogRect.y + dialogRect.height - 120, dialogRect.width - 40, 60};
         Color resultColor = strstr(decodedHiddenMessage, "No hidden") ? MODERN_ERROR : MODERN_SUCCESS;
@@ -400,8 +354,6 @@ void DrawDecodeDialog() {
         DrawText("Decoded Message:", resultRect.x + 10, resultRect.y + 10, 12, resultColor);
         DrawText(decodedHiddenMessage, resultRect.x + 10, resultRect.y + 30, 12, MODERN_TEXT);
     }
-    
-    // Close button - fixed position
     Rectangle closeRect = {dialogRect.x + dialogRect.width - 80, dialogRect.y + dialogRect.height - 40, 60, 30};
     if (DrawEnhancedButton(closeRect, "Close", MODERN_TEXT_LIGHT, MODERN_ERROR, 4)) {
         showDecodeDialog = false;
@@ -422,7 +374,6 @@ void DrawYTDialog() {
     dialogAnimTime += GetFrameTime();
     float animScale = fminf(dialogAnimTime * 4.0f, 1.0f);
     
-    // Modern overlay
     DrawRectangle(0, 0, screenWidth, screenHeight, (Color){0, 0, 0, 110});
     
     int dialogWidth = 550;
@@ -432,32 +383,26 @@ void DrawYTDialog() {
     
     Rectangle dialogRect = {dialogX, dialogY, dialogWidth * animScale, dialogHeight * animScale};
     
-    // Glass morphism
     DrawGlassMorphRect(dialogRect, MODERN_SURFACE, 12.0f);
-    
-    // YouTube-themed header
     Rectangle headerRect = {dialogRect.x, dialogRect.y, dialogRect.width, 70};
     DrawRectangleRounded(headerRect, 0.12f, 16, MODERN_ERROR);
     
-    DrawText("📺 YouTube Downloader", dialogRect.x + 30, dialogRect.y + 20, 20, WHITE);
+    DrawText("YouTube Downloader", dialogRect.x + 30, dialogRect.y + 20, 20, WHITE);
     DrawText("Download audio from any YouTube video", dialogRect.x + 30, dialogRect.y + 45, 12, (Color){255, 255, 255, 180});
     
-    // YouTube icon
     DrawRectangleRounded((Rectangle){dialogRect.x + dialogRect.width - 60, dialogRect.y + 15, 40, 25}, 0.2f, 8, WHITE);
     DrawText("YT", dialogRect.x + dialogRect.width - 52, dialogRect.y + 25, 12, MODERN_ERROR);
-    
-    // Instructions with modern styling
+
     int contentY = dialogRect.y + 90;
     Rectangle instrRect = {dialogRect.x + 20, contentY, dialogRect.width - 40, 50};
     DrawRectangleRounded(instrRect, 0.08f, 12, (Color){99, 102, 241, 20});
     DrawRectangleRoundedLines(instrRect, 0.08f, 12, MODERN_ACCENT);
     
-    DrawText("💡 Supported formats:", instrRect.x + 15, instrRect.y + 10, 12, MODERN_ACCENT);
+    DrawText("Supported formats:", instrRect.x + 15, instrRect.y + 10, 12, MODERN_ACCENT);
     DrawText("Full URLs, youtu.be links, video IDs, playlist URLs", instrRect.x + 15, instrRect.y + 28, 11, MODERN_TEXT_LIGHT);
     
-    // Enhanced URL input
     contentY += 70;
-    DrawText("🔗 Video URL", dialogRect.x + 30, contentY, 14, MODERN_TEXT);
+    DrawText("Video URL", dialogRect.x + 30, contentY, 14, MODERN_TEXT);
     Rectangle urlRect = {dialogRect.x + 30, contentY + 20, 380, 40};
     DrawRectangleRounded(urlRect, 0.06f, 8, MODERN_SURFACE_2);
     DrawRectangleRoundedLines(urlRect, 0.06f, 2, ytUrlEditMode ? MODERN_ACCENT : MODERN_BORDER);
@@ -466,13 +411,11 @@ void DrawYTDialog() {
         ytUrlEditMode = !ytUrlEditMode;
     }
     
-    // Enhanced download button with loading animation
     Rectangle downloadRect = {dialogRect.x + 420, contentY + 20, 100, 40};
     const char* downloadButtonText = isDownloading ? "Downloading..." : "🎵 Download";
     Color downloadButtonColor = isDownloading ? MODERN_TEXT_LIGHT : MODERN_SUCCESS;
     
     if (isDownloading) {
-        // Spinning loader
         float spinTime = GetTime() * 4.0f;
         Vector2 center = {downloadRect.x + downloadRect.width/2, downloadRect.y + downloadRect.height/2};
         DrawRing(center, 8, 12, 0, spinTime * 90.0f, 16, MODERN_ACCENT);
@@ -484,17 +427,15 @@ void DrawYTDialog() {
         }
     }
     
-    // Enhanced info section
     contentY += 80;
     Rectangle infoRect = {dialogRect.x + 20, contentY, dialogRect.width - 40, 80};
     DrawRectangleRounded(infoRect, 0.08f, 12, MODERN_SURFACE_2);
     DrawRectangleRoundedLines(infoRect, 0.08f, 1, MODERN_BORDER);
     
-    DrawText("ℹ️ Information:", infoRect.x + 15, infoRect.y + 15, 12, MODERN_ACCENT);
+    DrawText("Information:", infoRect.x + 15, infoRect.y + 15, 12, MODERN_ACCENT);
     DrawText("• Downloaded audio will be automatically selected", infoRect.x + 20, infoRect.y + 35, 11, MODERN_TEXT_LIGHT);
     DrawText("• Requires yt-dlp and yt_downloader.js in directory", infoRect.x + 20, infoRect.y + 50, 11, MODERN_TEXT_LIGHT);
     
-    // Enhanced status display
     if (strlen(statusMessage) > 0 && statusTimer > 0) {
         Rectangle statusRect = {dialogRect.x + 20, dialogRect.y + dialogRect.height - 70, dialogRect.width - 40, 45};
         Color statusColor = strstr(statusMessage, "Error") ? MODERN_ERROR : MODERN_SUCCESS;
@@ -504,11 +445,9 @@ void DrawYTDialog() {
         
         DrawText("Status:", statusRect.x + 15, statusRect.y + 8, 12, statusColor);
         
-        // Smart text wrapping
         const char* status = statusMessage;
         int maxWidth = statusRect.width - 30;
         if (MeasureText(status, 11) > maxWidth) {
-            // Simple word wrap implementation
             char line1[128], line2[128];
             int splitPoint = strlen(status) / 2;
             while (splitPoint > 0 && status[splitPoint] != ' ') splitPoint--;
@@ -525,7 +464,6 @@ void DrawYTDialog() {
         }
     }
     
-    // Modern close button
     Rectangle closeRect = {dialogRect.x + dialogRect.width - 80, dialogRect.y + dialogRect.height - 25, 60, 30};
     if (DrawEnhancedButton(closeRect, "Close", MODERN_TEXT_LIGHT, MODERN_ERROR, 6)) {
         showYTDialog = false;
@@ -538,8 +476,6 @@ void DrawChat() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
     pulseTime += GetFrameTime();
-    
-    // Modern gradient background
     for (int i = 0; i < screenHeight; i++) {
         float t = (float)i / screenHeight;
         Color color = {
@@ -551,16 +487,12 @@ void DrawChat() {
         DrawRectangle(0, i, screenWidth, 1, color);
     }
     
-    // Modern header with glass morphism
     Rectangle headerRect = {0, 0, screenWidth, 80};
     DrawRectangleGradientV(0, 0, screenWidth, 80, MODERN_ACCENT, (Color){MODERN_ACCENT.r, MODERN_ACCENT.g, MODERN_ACCENT.b, 200});
-    DrawRectangle(0, 70, screenWidth, 10, (Color){255, 255, 255, 30}); // Glass effect
-    
-    // Enhanced contact avatar with pulse effect
+    DrawRectangle(0, 70, screenWidth, 10, (Color){255, 255, 255, 30});
     float pulseScale = 1.0f + sinf(pulseTime * 2.0f) * 0.05f;
     Color avatarColor = connection.isConnected ? MODERN_SUCCESS : MODERN_ERROR;
     
-    // Avatar ring animation
     if (connection.isConnected) {
         DrawRing((Vector2){50, 40}, 25, 28, 0, pulseTime * 45.0f, 32, (Color){avatarColor.r, avatarColor.g, avatarColor.b, 50});
     }
@@ -568,28 +500,20 @@ void DrawChat() {
     DrawCircle(50, 40, 22 * pulseScale, (Color){255, 255, 255, 40});
     DrawCircle(50, 40, 20, avatarColor);
     DrawCircle(50, 40, 18, WHITE);
-    DrawText("👤", 42, 32, 16, MODERN_ACCENT);
-    
-    // Modern contact info with animations
+    DrawText(" ", 42, 32, 16, MODERN_ACCENT);
     const char* contactName = connection.isConnected ? "Secure Contact" : "Disconnected";
-    const char* contactStatus = connection.isConnected ? "🟢 Online & Encrypted" : "🔴 Offline";
+    const char* contactStatus = connection.isConnected ? "Online & Encrypted" : "Offline";
     
     DrawText(contactName, 85, 25, 18, WHITE);
     DrawText(contactStatus, 85, 48, 12, (Color){255, 255, 255, 200});
-    
-    // Connection info with modern styling
     if (connection.isConnected) {
         char connInfo[100];
-        sprintf(connInfo, "🔗 %s:%d", connection.remoteIP, connection.remotePort);
+        sprintf(connInfo, "%s:%d", connection.remoteIP, connection.remotePort);
         int textWidth = MeasureText(connInfo, 12);
-        
-        // Connection info badge
         Rectangle connBadge = {screenWidth - textWidth - 25, 20, textWidth + 10, 25};
         DrawRectangleRounded(connBadge, 0.5f, 12, (Color){255, 255, 255, 30});
         DrawText(connInfo, connBadge.x + 5, connBadge.y + 7, 11, WHITE);
     }
-    
-    // Enhanced disconnect button
     if (connection.isConnected) {
         Rectangle disconnectRect = {screenWidth - 120, 50, 100, 25};
         if (DrawEnhancedButton(disconnectRect, "Disconnect", MODERN_ERROR, MODERN_DARK, 7)) {
@@ -598,25 +522,20 @@ void DrawChat() {
         }
     }
     
-    // Modern messages area with custom scrollbar
     int chatAreaY = 80;
     int chatAreaHeight = screenHeight - 200;
     int messageY = chatAreaY + 15 - (int)scrollOffset;
     
-    // Custom scrollbar
     if (messageCount > 0) {
         float scrollbarHeight = chatAreaHeight * 0.8f;
         float scrollbarY = chatAreaY + 10;
-        float scrollRatio = scrollOffset / (messageCount * 150.0f); // Approximate
+        float scrollRatio = scrollOffset / (messageCount * 150.0f);
         float thumbY = scrollbarY + scrollRatio * (scrollbarHeight - 40);
         
-        // Scrollbar track
         DrawRectangleRounded((Rectangle){screenWidth - 8, scrollbarY, 6, scrollbarHeight}, 0.5f, 8, (Color){200, 200, 200, 100});
-        // Scrollbar thumb
         DrawRectangleRounded((Rectangle){screenWidth - 8, thumbY, 6, 40}, 0.5f, 8, MODERN_ACCENT);
     }
     
-    // Enhanced messages with modern bubbles
     pthread_mutex_lock(&messageMutex);
     for (int i = 0; i < messageCount; i++) {
         ChatMessage* msg = &messages[i];
@@ -634,22 +553,19 @@ void DrawChat() {
             continue;
         }
         
-        // Modern message bubble with shadow and glass effect
         Rectangle shadowRect = {msgX + 3, messageY + 3, msgWidth, msgHeight};
         DrawRectangleRounded(shadowRect, 0.15f, 16, (Color){0, 0, 0, 15});
         
         Color bubbleColor = msg->isSent ? 
-            (Color){99, 102, 241, 240} : // Sent: modern purple
-            (Color){255, 255, 255, 250}; // Received: clean white
+            (Color){99, 102, 241, 240} :
+            (Color){255, 255, 255, 250}; 
         
         Rectangle bubbleRect = {msgX, messageY, msgWidth, msgHeight};
         DrawRectangleRounded(bubbleRect, 0.15f, 16, bubbleColor);
         
-        // Glass morphism border
         Color borderColor = msg->isSent ? (Color){255, 255, 255, 80} : MODERN_BORDER;
         DrawRectangleRoundedLines(bubbleRect, 0.1516, 1, borderColor);
         
-        // Message tail (speech bubble effect)
         Vector2 tailPoints[3];
         if (msg->isSent) {
             tailPoints[0] = (Vector2){msgX + msgWidth - 20, messageY + msgHeight - 10};
@@ -661,16 +577,12 @@ void DrawChat() {
             tailPoints[2] = (Vector2){msgX + 15, messageY + msgHeight};
         }
         DrawTriangle(tailPoints[0], tailPoints[1], tailPoints[2], bubbleColor);
-        
-        // Content rendering with modern typography
         Color textColor = msg->isSent ? WHITE : MODERN_TEXT;
         
         if (msg->type == MSG_TEXT) {
-            // Enhanced text with better typography
             DrawText(msg->content, msgX + 20, messageY + 20, 14, textColor);
         } else if (msg->type == MSG_IMAGE) {
-            // Modern image message layout
-            DrawText("🖼️", msgX + 20, messageY + 15, 20, textColor);
+            DrawText(" ", msgX + 20, messageY + 15, 20, textColor);
             DrawText("Image", msgX + 50, messageY + 20, 14, textColor);
             
             char imagePath[512];
@@ -701,13 +613,9 @@ void DrawChat() {
                 
                 if (messageImageLoaded[i]) {
                     Rectangle imgRect = {msgX + 20, messageY + 45, messageImages[i].width, messageImages[i].height};
-                    
-                    // Image shadow and border
                     DrawRectangle(imgRect.x + 2, imgRect.y + 2, imgRect.width, imgRect.height, (Color){0, 0, 0, 30});
                     DrawTexture(messageImages[i], imgRect.x, imgRect.y, WHITE);
                     DrawRectangleLinesEx(imgRect, 2, (Color){255, 255, 255, 100});
-                    
-                    // Click to view
                     if (CheckCollisionPointRec(GetMousePosition(), imgRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         selectedMessageIndex = i;
                         LoadImageForDisplay(imagePath);
@@ -716,7 +624,6 @@ void DrawChat() {
                 }
             }
             
-            // Modern decode button
             Rectangle decodeRect = {msgX + msgWidth - 90, messageY + msgHeight - 40, 80, 30};
             DrawEnhancedButton(decodeRect, "🔓 Decode", MODERN_WARNING, MODERN_ERROR, 8 + i);
             if (CheckCollisionPointRec(GetMousePosition(), decodeRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -724,8 +631,7 @@ void DrawChat() {
                 showDecodeDialog = true;
             }
         } else if (msg->type == MSG_AUDIO) {
-            // Modern audio message
-            DrawText("🎵", msgX + 20, messageY + 15, 20, textColor);
+            DrawText(" ", msgX + 20, messageY + 15, 20, textColor);
             DrawText("Audio Message", msgX + 50, messageY + 20, 14, textColor);
             
             char audioPath[512];
@@ -746,7 +652,6 @@ void DrawChat() {
                 }
             }
             
-            // Modern audio controls
             if (messageAudioLoaded[i]) {
                 Rectangle playRect = {msgX + 20, messageY + 50, 60, 35};
                 const char* playText = audioPlaying[i] ? "⏸️ Stop" : "▶️ Play";
@@ -767,8 +672,6 @@ void DrawChat() {
                         audioPlaying[i] = true;
                     }
                 }
-                
-                // Audio visualization bars
                 if (audioPlaying[i]) {
                     for (int bar = 0; bar < 8; bar++) {
                         float barHeight = 5 + sinf(pulseTime * 8.0f + bar) * 15;
@@ -783,10 +686,9 @@ void DrawChat() {
             } else {
                 Rectangle audioPlaceholder = {msgX + 20, messageY + 50, 150, 35};
                 DrawRectangleRounded(audioPlaceholder, 0.1f, 8, (Color){MODERN_ACCENT.r, MODERN_ACCENT.g, MODERN_ACCENT.b, 30});
-                DrawText("♪ Audio File", audioPlaceholder.x + 10, audioPlaceholder.y + 12, 12, textColor);
+                DrawText("Audio File", audioPlaceholder.x + 10, audioPlaceholder.y + 12, 12, textColor);
             }
             
-            // Decode button
             Rectangle decodeRect = {msgX + msgWidth - 90, messageY + msgHeight - 40, 80, 30};
             DrawEnhancedButton(decodeRect, "🔓 Decode", MODERN_WARNING, MODERN_ERROR, 10 + i);
             if (CheckCollisionPointRec(GetMousePosition(), decodeRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -794,16 +696,13 @@ void DrawChat() {
                 showDecodeDialog = true;
             }
         }
-        
-        // Hidden message indicator with glow
         if (msg->hasHiddenMessage) {
             float glowPulse = (sinf(pulseTime * 4.0f) + 1.0f) / 2.0f;
             DrawCircle(msgX + 15, messageY + 15, 8, (Color){255, 193, 7, (unsigned char)(100 + glowPulse * 50)});
             DrawCircle(msgX + 15, messageY + 15, 6, MODERN_WARNING);
-            DrawText("🔒", msgX + 11, messageY + 11, 8, WHITE);
+            DrawText(" ", msgX + 11, messageY + 11, 8, WHITE);
         }
         
-        // Modern timestamp
         Rectangle timeRect = {msgX + msgWidth - 70, messageY + msgHeight - 25, 65, 20};
         DrawRectangleRounded(timeRect, 0.5f, 8, (Color){0, 0, 0, 30});
         DrawText(msg->timestamp, timeRect.x + 5, timeRect.y + 5, 9, (Color){255, 255, 255, 180});
@@ -811,28 +710,18 @@ void DrawChat() {
         messageY += msgHeight + 20;
     }
     pthread_mutex_unlock(&messageMutex);
-    
-    // Enhanced scrolling
     float wheel = GetMouseWheelMove();
     scrollOffset -= wheel * 50;
     if (scrollOffset < 0) scrollOffset = 0;
-    
-    // Ultra-modern input area with glass morphism
     int inputAreaY = screenHeight - 180;
     Rectangle inputBg = {0, inputAreaY, screenWidth, 180};
-    
-    // Glass background
     DrawRectangle(0, inputAreaY, screenWidth, 180, (Color){255, 255, 255, 240});
     DrawRectangle(0, inputAreaY, screenWidth, 2, MODERN_ACCENT);
-    
-    // Tool buttons with enhanced styling
     int buttonY = inputAreaY + 15;
     int buttonWidth = 85;
     int buttonSpacing = 95;
     int startX = 20;
-    
-    // Enhanced tool buttons row
-    if (DrawEnhancedButton((Rectangle){startX, buttonY, buttonWidth, 30}, "🖼️ Gen Image", MODERN_ACCENT, MODERN_DARK, 11)) {
+    if (DrawEnhancedButton((Rectangle){startX, buttonY, buttonWidth, 30}, "Gen Image", MODERN_ACCENT, MODERN_DARK, 11)) {
         GenerateRandomImage();
     }
     
@@ -846,7 +735,7 @@ void DrawChat() {
     
     bool canEncode = strlen(selectedFilePath) > 0 && strlen(hiddenMessageBuffer) > 0;
     Color encodeColor = canEncode ? MODERN_WARNING : MODERN_TEXT_LIGHT;
-    if (DrawEnhancedButton((Rectangle){startX + buttonSpacing * 3, buttonY, buttonWidth, 30}, "🔐 Encode", encodeColor, MODERN_DARK, 14)) {
+    if (DrawEnhancedButton((Rectangle){startX + buttonSpacing * 3, buttonY, buttonWidth, 30}, "Encode", encodeColor, MODERN_DARK, 14)) {
         if (canEncode) {
             char outputPath[512];
             sprintf(outputPath, "encoded_%d_%s", (int)time(NULL), 
@@ -855,31 +744,31 @@ void DrawChat() {
             if (selectedMessageType == MSG_IMAGE) {
                 EncodeMessageInImage(selectedFilePath, hiddenMessageBuffer, outputPath);
                 strcpy(selectedFilePath, outputPath);
-                ShowStatus("✅ Image encoded! Ready to send.");
+                ShowStatus("Image encoded! Ready to send.");
             } else if (selectedMessageType == MSG_AUDIO) {
                 EncodeMessageInAudio(selectedFilePath, hiddenMessageBuffer, outputPath);
                 strcpy(selectedFilePath, outputPath);
-                ShowStatus("✅ Audio encoded! Ready to send.");
+                ShowStatus("Audio encoded! Ready to send.");
             }
         } else {
-            ShowStatus("⚠️ Need file path and hidden message to encode");
+            ShowStatus("Need file path and hidden message to encode");
         }
     }
     
     bool canSendEncoded = connection.isConnected && strlen(selectedFilePath) > 0 && FileExists(selectedFilePath);
     Color sendEncodedColor = canSendEncoded ? MODERN_SUCCESS : MODERN_TEXT_LIGHT;
-    if (DrawEnhancedButton((Rectangle){startX + buttonSpacing * 4, buttonY, buttonWidth, 30}, "📤 Send Encoded", sendEncodedColor, MODERN_DARK, 15)) {
+    if (DrawEnhancedButton((Rectangle){startX + buttonSpacing * 4, buttonY, buttonWidth, 30}, "Send Encoded", sendEncodedColor, MODERN_DARK, 15)) {
         if (canSendEncoded) {
             if (selectedMessageType == MSG_IMAGE || selectedMessageType == MSG_AUDIO) {
                 SendFile(selectedFilePath, selectedMessageType);
                 selectedFilePath[0] = '\0';
                 hiddenMessageBuffer[0] = '\0';
-                ShowStatus("✅ Encoded file sent!");
+                ShowStatus("Encoded file sent!");
             }
         } else if (!connection.isConnected) {
-            ShowStatus("❌ Not connected!");
+            ShowStatus("Not connected!");
         } else {
-            ShowStatus("⚠️ No encoded file to send!");
+            ShowStatus("No encoded file to send!");
         }
     }
     
@@ -889,7 +778,6 @@ void DrawChat() {
         dialogAnimTime = 0.0f;
     }
     
-    // Enhanced message type selector
     buttonY += 45;
     DrawText("Message Type:", startX, buttonY + 8, 12, MODERN_TEXT);
     
@@ -901,20 +789,19 @@ void DrawChat() {
     Color imageColor = selectedMessageType == MSG_IMAGE ? MODERN_SUCCESS : MODERN_TEXT_LIGHT;
     Color audioColor = selectedMessageType == MSG_AUDIO ? MODERN_WARNING : MODERN_TEXT_LIGHT;
     
-    if (DrawEnhancedButton(textTypeRect, "📝 Text", textColor, MODERN_DARK, 17)) {
+    if (DrawEnhancedButton(textTypeRect, "Text", textColor, MODERN_DARK, 17)) {
         selectedMessageType = MSG_TEXT;
     }
-    if (DrawEnhancedButton(imageTypeRect, "🖼️ Image", imageColor, MODERN_DARK, 18)) {
+    if (DrawEnhancedButton(imageTypeRect, "Image", imageColor, MODERN_DARK, 18)) {
         selectedMessageType = MSG_IMAGE;
     }
-    if (DrawEnhancedButton(audioTypeRect, "🎵 Audio", audioColor, MODERN_DARK, 19)) {
+    if (DrawEnhancedButton(audioTypeRect, "Audio", audioColor, MODERN_DARK, 19)) {
         selectedMessageType = MSG_AUDIO;
     }
     
-    // Enhanced input fields
     if (selectedMessageType != MSG_TEXT) {
         buttonY += 40;
-        DrawText("📁 File Path:", startX, buttonY + 8, 12, MODERN_TEXT);
+        DrawText("File Path:", startX, buttonY + 8, 12, MODERN_TEXT);
         Rectangle fileRect = {startX + 80, buttonY, 450, 30};
         DrawRectangleRounded(fileRect, 0.06f, 8, MODERN_SURFACE_2);
         DrawRectangleRoundedLines(fileRect, 0.06f, 1, filePathEditMode ? MODERN_ACCENT : MODERN_BORDER);
@@ -923,19 +810,17 @@ void DrawChat() {
             filePathEditMode = !filePathEditMode;
         }
         
-        // File validation indicator
         bool fileExists = strlen(selectedFilePath) > 0 && FileExists(selectedFilePath);
         DrawCircle(startX + 540, buttonY + 15, 6, fileExists ? MODERN_SUCCESS : MODERN_ERROR);
         
         if (DrawEnhancedButton((Rectangle){startX + 550, buttonY, 70, 30}, "Browse", MODERN_ACCENT, MODERN_DARK, 20)) {
-            ShowStatus("💡 Use file picker or type path manually");
+            ShowStatus("Use file picker or type path manually");
         }
     }
     
-    // Hidden message input for steganography
     if (selectedMessageType == MSG_IMAGE || selectedMessageType == MSG_AUDIO) {
         buttonY += 40;
-        DrawText("🔒 Hidden Message:", startX, buttonY + 8, 12, MODERN_TEXT_LIGHT);
+        DrawText("Hidden Message:", startX, buttonY + 8, 12, MODERN_TEXT_LIGHT);
         Rectangle hiddenRect = {startX + 120, buttonY, screenWidth - 160, 30};
         DrawRectangleRounded(hiddenRect, 0.06f, 8, (Color){255, 248, 225, 255});
         DrawRectangleRoundedLines(hiddenRect, 0.068, 1, hiddenMessageEditMode ? MODERN_WARNING : (Color){255, 193, 7, 255});
@@ -945,9 +830,8 @@ void DrawChat() {
         }
     }
     
-    // Main message input with modern styling
     buttonY += 40;
-    DrawText("💬 Message:", startX, buttonY + 8, 14, MODERN_TEXT);
+    DrawText("Message:", startX, buttonY + 8, 14, MODERN_TEXT);
     Rectangle msgRect = {startX + 90, buttonY, screenWidth - 200, 35};
     DrawRectangleRounded(msgRect, 0.08f, 12, MODERN_SURFACE);
     DrawRectangleRoundedLines(msgRect, 0.08f,  2, inputEditMode ? MODERN_ACCENT : MODERN_BORDER);
@@ -956,7 +840,6 @@ void DrawChat() {
         inputEditMode = !inputEditMode;
     }
     
-    // Ultra-modern send button with connection status
     bool canSend = false;
     if (selectedMessageType == MSG_TEXT && strlen(inputBuffer) > 0) {
         canSend = true;
@@ -967,15 +850,13 @@ void DrawChat() {
     
     Rectangle sendRect = {screenWidth - 90, buttonY, 70, 35};
     Color sendColor = canSend && connection.isConnected ? MODERN_SUCCESS : MODERN_TEXT_LIGHT;
-    
-    // Pulse effect for send button when ready
     if (canSend && connection.isConnected) {
         float sendPulse = (sinf(pulseTime * 3.0f) + 1.0f) / 2.0f;
         DrawRing((Vector2){sendRect.x + sendRect.width/2, sendRect.y + sendRect.height/2}, 
                 25, 30, 0, 360, 32, (Color){sendColor.r, sendColor.g, sendColor.b, (unsigned char)(30 * sendPulse)});
     }
     
-    if (DrawEnhancedButton(sendRect, "📤 Send", sendColor, MODERN_DARK, 21)) {
+    if (DrawEnhancedButton(sendRect, "Send", sendColor, MODERN_DARK, 21)) {
         if (canSend && connection.isConnected) {
             if (selectedMessageType == MSG_TEXT) {
                 SendMessage(inputBuffer, MSG_TEXT);
@@ -986,15 +867,14 @@ void DrawChat() {
                 hiddenMessageBuffer[0] = '\0';
             }
         } else if (!connection.isConnected) {
-            ShowStatus("❌ Not connected!");
+            ShowStatus("Not connected!");
         }
     }
     
-    // Enhanced status display with animations
     if (statusTimer > 0) {
         Rectangle statusRect = {20, inputAreaY - 40, screenWidth - 40, 30};
-        Color statusBgColor = strstr(statusMessage, "Error") || strstr(statusMessage, "❌") ? MODERN_ERROR :
-                             strstr(statusMessage, "Warning") || strstr(statusMessage, "⚠️") ? MODERN_WARNING : MODERN_SUCCESS;
+        Color statusBgColor = strstr(statusMessage, "Error") || strstr(statusMessage, ") ? MODERN_ERROR :
+                             strstr(statusMessage, "Warning") || strstr(statusMessage, ") ? MODERN_WARNING : MODERN_SUCCESS;
         
         float statusAlpha = fminf(statusTimer / 2.0f, 1.0f);
         statusBgColor.a = (unsigned char)(statusBgColor.a * statusAlpha);
@@ -1006,7 +886,6 @@ void DrawChat() {
         DrawText(statusMessage, textX, statusRect.y + 9, 12, statusBgColor);
     }
     
-    // Dialogs with reset animation
     if (showDecodeDialog) {
         DrawDecodeDialog();
     }
