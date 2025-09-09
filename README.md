@@ -3,7 +3,7 @@
 <table>
   <tr>
     <td>
-      <img width="500" height="500" src="https://github.com/user-attachments/assets/42fa47b2-d3f7-426f-9991-427cebb4c2ec"  alt="StegaNetLogo"/>
+      <img width="600" height="600" alt="StegaNetLogo" src="https://github.com/user-attachments/assets/27e37890-005b-4f46-8840-e8b9271a35db" />
     </td>
     <td>
       <blockquote>
@@ -45,10 +45,10 @@ npm install
 Run ```make clean && make all && make run``` on one then wait, then run ```make run``` on the other terminal
 2. Make sure one is set to client mode and the other in server mode, and also ensure they both are on the same port
 3. Use these screenshots as reference
-<img width="1174" height="461" alt="Screenshot 2025-09-09 at 9 56 56 AM" src="https://github.com/user-attachments/assets/3690dfec-6995-42ae-ace7-21ce90d642d0" />
-<img width="1219" height="476" alt="Screenshot 2025-09-09 at 9 57 12 AM" src="https://github.com/user-attachments/assets/2e611b92-8fd7-457e-ac8d-8113e622b419" />
-<img width="1184" height="465" alt="Screenshot 2025-09-09 at 9 57 51 AM" src="https://github.com/user-attachments/assets/c4f4a6bd-cfc1-424d-af22-58219d390a75" />
-<img width="1076" height="421" alt="Screenshot 2025-09-09 at 9 58 04 AM" src="https://github.com/user-attachments/assets/f22cbee7-3233-438a-bd7c-03b031b0c254" />
+<img width="1174" height="461" alt="Screenshot 2025-09-09 at 5 49 03 PM" src="https://github.com/user-attachments/assets/1f09876d-8794-45af-83a7-b68372e886f3" />
+<img width="1218" height="476" alt="Screenshot 2025-09-09 at 5 49 18 PM" src="https://github.com/user-attachments/assets/c58308eb-402a-4b14-b510-bc58df63cb5c" />
+<img width="1183" height="467" alt="Screenshot 2025-09-09 at 5 49 35 PM" src="https://github.com/user-attachments/assets/b289504f-5cbf-493d-989a-cb039e76ee4c" />
+<img width="1214" height="474" alt="Screenshot 2025-09-09 at 5 50 01 PM" src="https://github.com/user-attachments/assets/b8900538-d059-41e8-a8ee-a601a3be09c8" />
 
 ### 4. File Overview
 <table>
