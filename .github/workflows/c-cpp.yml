@@ -38,11 +38,6 @@ jobs:
     - name: Build with Make
       run: make all
 
-    # ---------------- Run ----------------
-    - name: Run binary
-      run: ./stegachat
-      working-directory: ./bin
-
     # ---------------- Upload Artifact ----------------
     - name: Upload binary
       uses: actions/upload-artifact@v4
