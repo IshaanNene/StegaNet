@@ -17,7 +17,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # ---------------- Linux ----------------
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       run: |
@@ -28,17 +27,14 @@ jobs:
         make PLATFORM=PLATFORM_DESKTOP
         sudo make install
 
-    # ---------------- macOS ----------------
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
         brew install raylib make
 
-    # ---------------- Build ----------------
     - name: Build with Make
       run: make all
 
-    # ---------------- Upload Artifact ----------------
     - name: Upload binary
       uses: actions/upload-artifact@v4
       with:
