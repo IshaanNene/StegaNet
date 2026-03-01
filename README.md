@@ -14,11 +14,17 @@
 </table>
 
 ## Features
-- [x] Send normal messages over sockets  
-- [x] Image Steganography (Encode & Decode)  
-- [x] Audio Steganography (Encode & Decode)  
+- [x] Send structured messages over TCP sockets with length-prefixed framing  
+- [x] Image Steganography (Encode & Decode up to 4KB capacity across R,G,B channels)  
+- [x] Audio Steganography (Encode & Decode utilizing LSB manipulation)  
 - [x] Download audio directly from YouTube
+- [x] AES-256-CBC Payload Encryption & CRC32 Integrity Checks
+- [x] Resilient Network Protocol (Keep-alive Pings, Timeouts, Latency Measurement)
+- [x] Leveled Rolling Logs (`steganet.log`) for system observation
+- [x] Complete UI experience (Search/Filter, Drag & Drop, Notification sounds)
 
+## Architecture & Security
+StegaNet utilizes a centralized `AppState` model to orchestrate multi-threaded networking away from the Raylib UI thread safely using mutexes. Every message transiting the network can optionally be **encrypted** statically via OpenSSL using AES-256-CBC, and guaranteed through a custom CRC32 packet checksum signature.
 
 ## How to run 
 ### 1. Clone the repo
@@ -41,14 +47,12 @@ npm install
 ```
 
 ### 3. Run the project
-1. Start two terminals
-Run ```make clean && make all && make run``` on one then wait, then run ```make run``` on the other terminal
-2. Make sure one is set to client mode and the other in server mode, and also ensure they both are on the same port
-3. Use these screenshots as reference
-<img width="1174" height="461" alt="Screenshot 2025-09-09 at 5 49 03 PM" src="https://github.com/user-attachments/assets/1f09876d-8794-45af-83a7-b68372e886f3" />
-<img width="1218" height="476" alt="Screenshot 2025-09-09 at 5 49 18 PM" src="https://github.com/user-attachments/assets/c58308eb-402a-4b14-b510-bc58df63cb5c" />
-<img width="1183" height="467" alt="Screenshot 2025-09-09 at 5 49 35 PM" src="https://github.com/user-attachments/assets/b289504f-5cbf-493d-989a-cb039e76ee4c" />
-<img width="1214" height="474" alt="Screenshot 2025-09-09 at 5 50 01 PM" src="https://github.com/user-attachments/assets/b8900538-d059-41e8-a8ee-a601a3be09c8" />
+1. Build the source binaries (with or without ASan)
+```bash
+make clean && make asan && make run
+```
+2. For testing over two nodes, configure one instance on port `8888` under "Server" and the other pointing to the server's IP address.
+3. You can utilize `Ctrl+Enter` to send, Drag/Drop valid images (.png, .jpg) or audio (.wav, .mp3), and observe connection latency via the header UI indicators.
 
 ### 4. File Overview
 <table>
@@ -60,39 +64,35 @@ Run ```make clean && make all && make run``` on one then wait, then run ```make 
   </thead>
   <tbody>
     <tr>
-      <td><a href="main.c"><code>main.c</code></a></td>
-      <td>Entry point of the program. Initializes the UI and coordinates between networking, steganography, and utilities.</td>
+      <td><a href="src/main.c"><code>src/main.c</code></a></td>
+      <td>Entry point of the program. Initializes the window, components, UI rendering loops, and the application state.</td>
     </tr>
     <tr>
-      <td><a href="network.c"><code>network.c</code></a></td>
-      <td>Handles socket programming: setting up client/server modes, sending, and receiving messages.</td>
+      <td><a href="src/network.c"><code>src/network.c</code></a></td>
+      <td>Handles length-prefixed protocol streams, socket setups, background thread reception, and timeout pings.</td>
     </tr>
     <tr>
-      <td><a href="steganography.c"><code>steganography.c</code></a></td>
-      <td>Encoding and Decoding logic for images and audio files.</td>
+      <td><a href="src/steganography.c"><code>src/steganography.c</code></a></td>
+      <td>Multi-channel embedding and extraction algorithms for images (RGB) and WAV files (LSB).</td>
     </tr>
     <tr>
-      <td><a href="utils.c"><code>utils.c</code></a></td>
-      <td>Utility functions for file I/O, random media generation, and data validation.</td>
+      <td><a href="src/crypto.c"><code>src/crypto.c</code></a></td>
+      <td>Interface interfacing with OpenSSL providing `EncryptData` and `DecryptData` (AES-256/XOR fallback).</td>
     </tr>
     <tr>
-      <td><a href="ui.c"><code>ui.c</code></a></td>
-      <td>Raylib-based user interface for displaying prompts, visual feedback, and logs.</td>
+      <td><a href="src/logging.c"><code>src/logging.c</code></a></td>
+      <td>Secure, thread-friendly rotating Leveled logger generating standard outputs in `.log` extensions.</td>
     </tr>
     <tr>
-      <td><a href="yt_downloader.js"><code>yt_downloader.js</code></a></td>
-      <td>Node.js script that uses <code>yt-dlp</code> and <code>ffmpeg</code> to download audio from YouTube in WAV format.</td>
+      <td><a href="src/utils.c"><code>src/utils.c</code></a></td>
+      <td>Utility routines executing file I/O operations, populating the GUI message list, and YouTube handling.</td>
     </tr>
     <tr>
-      <td><a href="Makefile"><code>Makefile</code></a></td>
-      <td>Build system with targets for compiling, running, cleaning, installing dependencies (Linux/macOS), and debugging.</td>
+      <td><a href="src/ui.c"><code>src/ui.c</code></a></td>
+      <td>Raylib UI view component drawing message bubbles, search inputs, connection indicators, and file droppers.</td>
     </tr>
   </tbody>
 </table>
-
-## Future Implementation
-- [ ] Encrypted messaging using various encryption algorithms  
-- [ ] Connection support between two different IPs (multi-device)
 
 ## Contributing
 

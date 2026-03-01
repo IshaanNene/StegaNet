@@ -11,7 +11,7 @@ if (process.argv.length < 3) {
 const url = process.argv[2];
 const outTemplate = "%(title)s [%(id)s].%(ext)s";
 
-const dl = spawn("/Users/ishaannene/.pyenv/shims/yt-dlp", [
+const dl = spawn("yt-dlp", [
     "-x",
     "--audio-format", "wav",
     "--audio-quality", "0",

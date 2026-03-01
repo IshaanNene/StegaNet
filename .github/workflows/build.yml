@@ -1,0 +1,32 @@
+name: Build and Check ASAN
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libraylib-dev libssl-dev gcc make libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev libwayland-dev libxkbcommon-dev
+    - name: Build with ASAN
+      run: make asan
+    - name: Verify Binary
+      run: ls -l bin/stegachat
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Dependencies
+      run: brew install raylib openssl
+    - name: Build with ASAN
+      run: make asan
+    - name: Verify Binary
+      run: ls -l bin/stegachat
